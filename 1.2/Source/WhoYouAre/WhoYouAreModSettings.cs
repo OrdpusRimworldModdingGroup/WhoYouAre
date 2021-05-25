@@ -13,7 +13,9 @@ namespace WhoYouAre {
 		public static Dictionary<string, TraitSelection> traitDefaultSettings;
 		public static Dictionary<string, SkillSelection> skillSettings = new Dictionary<string, SkillSelection>();
 		public static Dictionary<string, SkillSelection> skillDefaultSettings;
-
+		public static bool HideStartingPawns = false;
+		public const double ChitchatChance = 0.05, TraitChance = 0.2, BackStoryChance = 0.2;
+		//public const double ChitchatChance = 1, TraitChance = 1, BackStoryChance = 1;
 
 		static WhoYouAreModSettings() {
 			LongEventHandler.ExecuteWhenFinished(() => {
@@ -27,21 +29,37 @@ namespace WhoYouAre {
 						}
 					}
 				});
+				DefDatabase<SkillDef>.AllDefs.ToList().ForEach(x => {
+					if (!skillSettings.ContainsKey(x.defName)) {
+						if (skillDefaultSettings.ContainsKey(x.defName)) {
+							skillSettings[x.defName] = new SkillSelection(skillDefaultSettings[x.defName]);
+						} else {
+							skillSettings[x.defName] = new SkillSelection();
+						}
+					}
+				});
 			});
 		}
 
 		public override void ExposeData() {
-			var save = new Dictionary<string, TraitSelection>();
+			if (traitSettings == null) traitSettings = new Dictionary<string, TraitSelection>();
+			Scribe_Collections.Look(ref traitSettings, "traitSettings");
 			if (traitDefaultSettings != null) {
-				foreach (var entry in save) {
-					if (traitDefaultSettings.ContainsKey(entry.Key) && !traitDefaultSettings[entry.Key].Equals(entry.Value))
-						save[entry.Key] = entry.Value;
+				foreach (var entry in traitSettings) {
+					if (traitDefaultSettings.ContainsKey(entry.Key) && traitDefaultSettings[entry.Key].Equals(entry.Value))
+						traitSettings.Remove(entry.Key);
 				}
 			}
-			Scribe_Collections.Look(ref save, "traitSettings");
-			foreach (var entry in save)
-				traitSettings[entry.Key] = entry.Value;
+			if (skillSettings == null) skillSettings = new Dictionary<string, SkillSelection>();
+			Scribe_Collections.Look(ref skillSettings, "skillSettings");
+			if (skillDefaultSettings != null) {
+				foreach (var entry in skillSettings) {
+					if (skillDefaultSettings.ContainsKey(entry.Key) && skillDefaultSettings[entry.Key].Equals(entry.Value))
+						skillSettings.Remove(entry.Key);
+				}
+			}
 		}
+
 
 	}
 
@@ -54,6 +72,19 @@ namespace WhoYouAre {
 		public bool GainByTime = false;
 		public int MinimumTimePassed = 50;
 		public bool GainFromMaster = true;
+
+		public static string[] LabelsCheckbox = new string[] {
+			"Force Shown",
+			"Gain From Thought",
+			"Gain From Interaction",
+			"Gain By Time",
+			"Gain From Master"
+		};
+
+		public static string[] LabelsSlider = new string[] {
+			"Relation Threshold",
+			"Minimum Time Passed"
+		};
 
 		public SkillSelection() { }
 
@@ -88,6 +119,15 @@ namespace WhoYouAre {
 			Scribe_Values.Look(ref GainFromMaster, "GainFromMaster");
 		}
 
+		public (bool[], int[], int[]) ToArray() {
+			return (new bool[] { ForceShown, GainFromThought, GainFromInteraction, GainByTime, GainFromMaster }, new int[] { RelationThreshold, MinimumTimePassed }, new int[] { 2, 3 });
+		}
+
+		public void FromArray(bool[] bools, int[] ints) {
+			(ForceShown, GainFromThought, GainFromInteraction, GainByTime, GainFromMaster) = (bools[0], bools[1], bools[2], bools[3], bools[4]);
+			(RelationThreshold, MinimumTimePassed) = (ints[0], ints[1]);
+		}
+
 	}
 
 	public class TraitSelection : IExposable, IEquatable<TraitSelection> {
@@ -98,6 +138,19 @@ namespace WhoYouAre {
 		public bool GainByTime = false;
 		public int MinimumTimePassed = 50;
 		public bool GainFromBreak = true;
+
+		public static string[] LabelsCheckbox = new string[] {
+			"Force Shown",
+			"Gain From Thought",
+			"Gain From Interaction",
+			"Gain By Time",
+			"Gain From Break"
+		};
+
+		public static string[] LabelsSlider = new string[] {
+			"Relation Threshold",
+			"Minimum Time Passed"
+		};
 
 		public TraitSelection() { }
 
@@ -130,6 +183,15 @@ namespace WhoYouAre {
 			Scribe_Values.Look(ref GainByTime, "GainByTime");
 			Scribe_Values.Look(ref MinimumTimePassed, "MinimumTimePassed");
 			Scribe_Values.Look(ref GainFromBreak, "GainFromBreak");
+		}
+
+		public (bool[], int[], int[]) ToArray() {
+			return (new bool[] { ForceShown, GainFromThought, GainFromInteraction, GainByTime, GainFromBreak }, new int[] { RelationThreshold, MinimumTimePassed }, new int[] { 2, 3 });
+		}
+
+		public void FromArray(bool[] bools, int[] ints) {
+			(ForceShown, GainFromThought, GainFromInteraction, GainByTime, GainFromBreak) = (bools[0], bools[1], bools[2], bools[3], bools[4]);
+			(RelationThreshold, MinimumTimePassed) = (ints[0], ints[1]);
 		}
 
 	}

@@ -35,7 +35,7 @@
       </rulesStrings>
     </logRulesInitiator>
   </WhoYouAre.WYAInteractionDef>
-
+  
   <WhoYouAre.WYAInteractionDef>
     <defName>WYA_Chitchat_Skill</defName>
     <label>chitchat</label>
@@ -47,7 +47,6 @@
     <recipientThought>Chitchat</recipientThought>
     <logRulesInitiator>
       <rulesStrings>
-
         <li>r_logentry->[INITIATOR_nameDef] and [RECIPIENT_nameDef] [talkedabout] [TalkTopicLight].</li>
         <li>r_logentry->[INITIATOR_nameDef] [talkedabout] [TalkTopicLight] with [RECIPIENT_nameDef].</li>
         <li>r_logentry(p=0.8)->[INITIATOR_nameDef] [commentedabout] [TalkTopicLight] to [RECIPIENT_nameDef].</li>
@@ -69,9 +68,9 @@
       </rulesStrings>
     </logRulesInitiator>
   </WhoYouAre.WYAInteractionDef>
-  
+
   <WhoYouAre.WYAInteractionDef>
-    <defName>WYA_DeepTalk</defName>
+    <defName>WYA_DeepTalk_Backstory</defName>
     <label>deep talk</label>
     <workerClass>WhoYouAre.InteractionWorker_DeepTalk_Backstory</workerClass>
     <symbol>Things/Mote/SpeechSymbols/DeepTalk</symbol>
@@ -81,7 +80,6 @@
     <recipientThought>DeepTalk</recipientThought>
     <logRulesInitiator>
       <rulesStrings>
-        
         <li>r_logentry->[INITIATOR_nameDef] and [RECIPIENT_nameDef] [talkedabout] [subject].</li>
         <li>r_logentry->[INITIATOR_nameDef] [talkedabout] [subject] with [RECIPIENT_nameDef].</li>
 

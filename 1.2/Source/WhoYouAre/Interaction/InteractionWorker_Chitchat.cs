@@ -10,28 +10,41 @@ using HarmonyLib;
 
 namespace WhoYouAre {
 
-	public class InteractionWorker_Chitchat_Trait : InteractionWorker_Chitchat {
+	public class InteractionWorker_Chitchat_Trait : RimWorld.InteractionWorker_Chitchat {
 
 		public override float RandomSelectionWeight(Pawn initiator, Pawn recipient) {
-			return base.RandomSelectionWeight(initiator, recipient) * 0.1f;
+			return 0;
 		}
 
 		public override void Interacted(Pawn initiator, Pawn recipient, List<RulePackDef> extraSentencePacks, out string letterText, out string letterLabel, out LetterDef letterDef, out LookTargets lookTargets) {
 			base.Interacted(initiator, recipient, extraSentencePacks, out letterText, out letterLabel, out letterDef, out lookTargets);
-			InteractionWorkerUtil.EvaluateTrait(initiator, recipient, out letterText, out letterLabel, out letterDef, out lookTargets);
+			InteractionWorkerUtil.EvaluateTrait(initiator, recipient);
 		}
 
 	}
 
-	public class InteractionWorker_Chitchat_Skill : InteractionWorker_Chitchat {
+	public class InteractionWorker_Chitchat_Skill : RimWorld.InteractionWorker_Chitchat {
 
 		public override float RandomSelectionWeight(Pawn initiator, Pawn recipient) {
-			return base.RandomSelectionWeight(initiator, recipient) * 0.1f;
+			return float.MinValue;
 		}
 
 		public override void Interacted(Pawn initiator, Pawn recipient, List<RulePackDef> extraSentencePacks, out string letterText, out string letterLabel, out LetterDef letterDef, out LookTargets lookTargets) {
 			base.Interacted(initiator, recipient, extraSentencePacks, out letterText, out letterLabel, out letterDef, out lookTargets);
-			InteractionWorkerUtil.EvaluateSkill(initiator, recipient, out letterText, out letterLabel, out letterDef, out lookTargets);
+			InteractionWorkerUtil.EvaluateSkill(initiator, recipient);
+		}
+	}
+
+	public class InteractionWorker_Chitchat : RimWorld.InteractionWorker_Chitchat {
+
+		private static Random rand = new Random();
+
+		public override void Interacted(Pawn initiator, Pawn recipient, List<RulePackDef> extraSentencePacks, out string letterText, out string letterLabel, out LetterDef letterDef, out LookTargets lookTargets) {
+			base.Interacted(initiator, recipient, extraSentencePacks, out letterText, out letterLabel, out letterDef, out lookTargets);
+			if (rand.NextDouble() < WhoYouAreModSettings.ChitchatChance) {
+				if (rand.NextDouble() < WhoYouAreModSettings.TraitChance) InteractionWorkerUtil.EvaluateTrait(initiator, recipient);
+				else InteractionWorkerUtil.EvaluateSkill(initiator, recipient);
+			}
 		}
 
 	}

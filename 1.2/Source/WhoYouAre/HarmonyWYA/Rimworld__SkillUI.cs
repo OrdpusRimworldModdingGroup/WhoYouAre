@@ -39,11 +39,15 @@ namespace WhoYouAre.HarmonyWYA {
 		}
 
 		private static SkillRecord FilterSkill(SkillRecord skill) {
-			var result = new SkillRecord((Pawn)PawnInfo.GetValue(skill), skill.def);
-			return result;
+			if (Current.ProgramState != ProgramState.Playing && !WhoYouAreModSettings.HideStartingPawns) return skill;
+			var pawn = PawnInfo.GetValue(skill) as Pawn;
+			var info = pawn.GetComp<CompPawnInfo>().SkillInfo;
+			if (info[skill.def.defName] || (skill.def.disablingWorkTags & Rimworld__CharacterCardUtility__DrawCharacterCard.FilterDisableTags(pawn)) != 0) return skill;
+			return new SkillRecord(pawn, skill.def);
 		}
 
 		private static bool FilterDisabled(SkillRecord skill) {
+			if (Current.ProgramState != ProgramState.Playing && !WhoYouAreModSettings.HideStartingPawns) return skill.TotallyDisabled;
 			return false;
 		}
 

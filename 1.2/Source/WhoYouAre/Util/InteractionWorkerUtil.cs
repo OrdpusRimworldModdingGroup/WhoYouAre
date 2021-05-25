@@ -47,83 +47,42 @@ namespace WhoYouAre {
 			return rule;
 		}
 
-
-		internal static void GenerateExtraRuleChitchat(string topic, List<RulePackDef> extraSentencePacks) {
-			if (topic == "") {
-				extraSentencePacks.Add(TopicLight);
-				return;
-			}
-			var rule = RulePackDefsTraits[topic];
-			Log.Message("has topic on " + topic);
-			rule.RulesImmediate.ForEach(x => Log.Message(x.keyword + ';' + x.tag + ';' + x.requiredTag));
-			extraSentencePacks.Add(rule);
-		}
-
 		private static (Pawn, Pawn) ShufflePawn(Pawn pawn1, Pawn pawn2) {
 			if (rand.Next(2) == 0) return (pawn1, pawn2);
 			return (pawn2, pawn1);
 		}
 
-		internal static void EvaluateTrait(Pawn initiator, Pawn recipient, out string letterText, out string letterLabel, out LetterDef letterDef, out LookTargets lookTargets) {
-			letterText = null;
-			letterLabel = null;
-			letterDef = null;
-			lookTargets = null;
+		internal static void EvaluateTrait(Pawn initiator, Pawn recipient) {
 			(initiator, recipient) = ShufflePawn(initiator, recipient);
 			var comp = initiator.GetComp<CompPawnInfo>();
 			var temp = comp.GetAvaliableTraits(relation: initiator.relations.OpinionOf(recipient));
-			//Log.Message("Trying to Gain Trait");
-			//temp.ForEach(x => Log.Message(x.def.defName));
-			if (temp.Count == 0) {
-				//InteractionWorkerUtil.GenerateExtraRuleChitchat("", extraSentencePacks);
-				return;
-			}
+			if (temp.Count == 0) return;
 			var topic = temp[rand.Next(temp.Count)];
 			if (comp.TraitInfo[topic.def.defName]) return;
 			comp.TraitInfo[topic.def.defName] = true;
-			letterText = "Trait of " + initiator.Name + " has been discovered, which is " + topic.def.label;
-			letterLabel = "Trait Discovered";
-			letterDef = LetterDefOf.NeutralEvent;
-			lookTargets = initiator;
+			Find.LetterStack.ReceiveLetter("Trait Discovered", "Trait of " + initiator.Name + " has been discovered, which is " + topic.def.label, LetterDefOf.NeutralEvent, initiator);
 		}
 
-		internal static void EvaluateSkill(Pawn initiator, Pawn recipient, out string letterText, out string letterLabel, out LetterDef letterDef, out LookTargets lookTargets) {
-			letterText = null;
-			letterLabel = null;
-			letterDef = null;
-			lookTargets = null;
+		internal static void EvaluateSkill(Pawn initiator, Pawn recipient) {
 			(initiator, recipient) = ShufflePawn(initiator, recipient);
 			var comp = initiator.GetComp<CompPawnInfo>();
 			var temp = comp.GetAvaliableSkills(relation: initiator.relations.OpinionOf(recipient));
-			//Log.Message("Trying to Gain Trait");
-			//temp.ForEach(x => Log.Message(x.def.defName));
-			if (temp.Count == 0) {
-				//InteractionWorkerUtil.GenerateExtraRuleChitchat("", extraSentencePacks);
-				return;
-			}
+			if (temp.Count == 0) return;
 			var topic = temp[rand.Next(temp.Count)];
 			if (comp.SkillInfo[topic.def.defName]) return;
 			comp.SkillInfo[topic.def.defName] = true;
-			letterText = "Skill of " + initiator.Name + " has been evaluated, which is " + topic.def.label;
-			letterLabel = "Skill Evaluated";
-			letterDef = LetterDefOf.NeutralEvent;
-			lookTargets = initiator;
+			Find.LetterStack.ReceiveLetter("Skill Evaluated", "Skill of " + initiator.Name + " has been evaluated, which is " + topic.def.label, LetterDefOf.NeutralEvent, initiator);
 		}
 
-		internal static void EvaluateBackstory(Pawn initiator, Pawn recipient, out string letterText, out string letterLabel, out LetterDef letterDef, out LookTargets lookTargets) {
-			letterText = null;
-			letterLabel = null;
-			letterDef = null;
-			lookTargets = null;
+		internal static void EvaluateBackstory(Pawn initiator, Pawn recipient) {
 			(initiator, recipient) = ShufflePawn(initiator, recipient);
 			var comp = initiator.GetComp<CompPawnInfo>();
 			var story = rand.Next(2);
+			if (initiator.story.adulthood == null) story = 0;
 			if (comp.BackStoryInfo[story]) return;
 			var topic = initiator.story.GetBackstory((BackstorySlot)story);
-			letterText = "Backstory of " + initiator.Name + " has been poured out, which is " + topic.title;
-			letterLabel = "Skill Evaluated";
-			letterDef = LetterDefOf.NeutralEvent;
-			lookTargets = initiator;
+			comp.BackStoryInfo[story] = true;
+			Find.LetterStack.ReceiveLetter("Backstory Found", "Backstory of " + initiator.Name + " has been found, which is " + topic.title, LetterDefOf.NeutralEvent, initiator);
 		}
 	}
 }

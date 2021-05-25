@@ -34,12 +34,21 @@ namespace WhoYouAre {
 		public override void DoSettingsWindowContents(Rect canvas) {
 			float lineHeight = Text.LineHeight;
 			Listing_Standard listingStandard = new Listing_Standard();
-			Rect rect2 = new Rect(0, 0, canvas.width - 20, (3f + lineHeight) * WhoYouAreModSettings.traitSettings.Count);
+			var showedSliders = WhoYouAreModSettings.traitSettings.Aggregate(0, (tot, x) => x.Value.GainFromInteraction || x.Value.GainByTime ? 1 : 0);
+			Rect rect2 = new Rect(0, 0, canvas.width - 20, (3f + lineHeight) * (WhoYouAreModSettings.traitSettings.Count + showedSliders));
 			Widgets.BeginScrollView(canvas, ref scrollLoc, rect2);
 			float rowY = 0;
-			foreach (var k in WhoYouAreModSettings.traitSettings.Keys) {
-				DrawSingleSetting(new Rect(0, rowY, rect2.width, lineHeight), k);
-				rowY += 3f + lineHeight;
+			foreach (var entry in WhoYouAreModSettings.traitSettings) {
+				bool[] bools;
+				int[] ints, pos;
+				(bools, ints, pos) = entry.Value.ToArray();
+				DrawSingleSetting(new Rect(0, rowY, rect2.width, lineHeight), entry.Key, TraitSelection.LabelsCheckbox, bools, TraitSelection.LabelsSlider, ints, pos);
+				entry.Value.FromArray(bools, ints);
+				var temp = false;
+				var param = 1;
+				foreach (var item in pos) temp |= bools[item];
+				if (temp) param += 1;
+				rowY += (3f + lineHeight) * param;
 			}
 			Widgets.EndScrollView();
 
@@ -49,28 +58,34 @@ namespace WhoYouAre {
 			return "WhoYouAre.Setting".Translate();
 		}
 
-		public void DrawSingleSetting(Rect rect, string defName) {
+		public void DrawSingleSetting(Rect rect, string defName, string[] labels, bool[] bools, string[] labels2, int[] ints, int[] pos) {
 			const float frontGap = 100;
-			const float iconGap = 50;
+			const float labelWidth = 100;
+			const float iconGap = 20;
+			const float boxWidth = 100;
+			const float boxGap = 50;
 			var row = new WidgetRow(rect.x + frontGap, rect.y);
-			row.Label(defName, rect.width / 4);
-			var traitInfo = WhoYouAreModSettings.traitSettings[defName];
-			bool ForceShown = traitInfo.ForceShown, GainFromThought = traitInfo.GainFromThought, GainFromInteraction = traitInfo.GainFromInteraction, GainByTime = traitInfo.GainByTime, GainFromBreak = traitInfo.GainFromBreak;
-			row.ToggleableIcon(ref ForceShown, null, "Force Shown");
-			row.Gap(iconGap);
-			row.ToggleableIcon(ref GainFromThought, null, "Gain From Thought");
-			row.Gap(iconGap);
-			row.ToggleableIcon(ref GainFromInteraction, null, "Gain From Interaction");
-			row.Gap(iconGap);
-			row.ToggleableIcon(ref GainByTime, null, "Gain By Time");
-			row.Gap(iconGap);
-			row.ToggleableIcon(ref GainFromBreak, null, "Gain From Break");
-			row.Gap(iconGap);
-			traitInfo.ForceShown = ForceShown;
-			traitInfo.GainFromThought = traitInfo.GainFromThought;
-			traitInfo.GainFromInteraction = traitInfo.GainFromInteraction;
-			traitInfo.GainByTime = traitInfo.GainByTime;
-			traitInfo.GainFromBreak = traitInfo.GainFromBreak;
+			row.Label(defName, labelWidth);
+			bool temp;
+			int posi = 0;
+			for (int i = 0; i < labels.Length; i++) {
+				temp = bools[i];
+				row.ToggleableIcon(ref temp, null, labels[i]);
+				bools[i] = temp;
+				row.Gap(iconGap);
+				if (posi < pos.Length && pos[posi] == i) {
+					if (temp) {
+						var rect2 = new Rect(row.FinalX, row.FinalY, boxWidth, Text.LineHeight);
+						var temp2 = ints[posi];
+						string buffer = temp2.ToString();
+						Widgets.TextFieldNumeric(rect2, ref temp2, ref buffer);
+						TooltipHandler.TipRegion(rect2, labels2[posi]);
+						ints[posi] = temp2;
+						row.Gap(rect2.width + iconGap);
+					}
+					posi++;
+				}
+			}
 		}
 	}
 }

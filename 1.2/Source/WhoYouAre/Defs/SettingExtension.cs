@@ -14,12 +14,9 @@ namespace WhoYouAre {
 
 
 		public static void GenerateSetting() {
-			WhoYouAreModSettings.traitDefaultSettings =
-					DictScribeUtil.ListToDict(
-						DefDatabase<ThingDef>.GetNamed("WYA_ModSetting").GetModExtension<SettingExtension>().traitData);
-			WhoYouAreModSettings.skillDefaultSettings =
-					DictScribeUtil.ListToDict(
-						DefDatabase<ThingDef>.GetNamed("WYA_ModSetting").GetModExtension<SettingExtension>().skillData);
+			var ext = DefDatabase<ThingDef>.GetNamed("WYA_ModSetting").GetModExtension<SettingExtension>();
+			WhoYouAreModSettings.traitDefaultSettings = DictScribeUtil.ListToDict(ext.traitData);
+			WhoYouAreModSettings.skillDefaultSettings = DictScribeUtil.ListToDict(ext.skillData);
 		}
 
 	}

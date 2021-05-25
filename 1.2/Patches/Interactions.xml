@@ -1,0 +1,14 @@
+<Patch>
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/InteractionDef[defName="Chitchat"]/workerClass</xpath>
+    <value>
+      <workerClass>WhoYouAre.InteractionWorker_Chitchat</workerClass>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/InteractionDef[defName="DeepTalk"]/workerClass</xpath>
+    <value>
+      <workerClass>WhoYouAre.InteractionWorker_DeepTalk</workerClass>
+    </value>
+  </Operation>
+</Patch>
