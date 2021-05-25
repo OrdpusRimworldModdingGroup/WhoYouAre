@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  
+  <ThingDef>
+    <defName>WYA_ModSetting</defName>
+    <label>A thing to store default mod setting, should never exist in game</label>
+    <thingClass>Thing</thingClass>
+    <modExtensions>
+      <li Class="WhoYouAre.SettingExtension">
+      	<traitData>
+      	  <li>
+      	  	<key>Nudist</key>
+      	  	<value>
+      	  	  <ForceShown>true</ForceShown>
+      	  	</value>
+      	  </li>
+      	</traitData>
+      </li>
+    </modExtensions>
+  </ThingDef>
+
+	
+</Defs>

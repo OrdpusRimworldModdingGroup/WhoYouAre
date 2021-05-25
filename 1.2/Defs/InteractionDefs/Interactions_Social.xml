@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <!-- Random social interactions -->
+
+  <WhoYouAre.WYAInteractionDef>
+    <defName>WYA_Chitchat_Trait</defName>
+    <label>chitchat</label>
+    <workerClass>WhoYouAre.InteractionWorker_Chitchat_Trait</workerClass>
+    <symbol>Things/Mote/SpeechSymbols/Chitchat</symbol>
+    <initiatorThought>Chitchat</initiatorThought>
+    <initiatorXpGainSkill>Social</initiatorXpGainSkill>
+    <initiatorXpGainAmount>4</initiatorXpGainAmount>
+    <recipientThought>Chitchat</recipientThought>
+    <logRulesInitiator>
+      <rulesStrings>
+        <li>r_logentry->[INITIATOR_nameDef] and [RECIPIENT_nameDef] [talkedabout] [TalkTopicLight].</li>
+        <li>r_logentry->[INITIATOR_nameDef] [talkedabout] [TalkTopicLight] with [RECIPIENT_nameDef].</li>
+        <li>r_logentry(p=0.8)->[INITIATOR_nameDef] [commentedabout] [TalkTopicLight] to [RECIPIENT_nameDef].</li>
+
+        <li>talkedabout(p=4)->chatted about</li>
+        <li>talkedabout->shared a word about</li>
+        <li>talkedabout->spoke about</li>
+        <li>talkedabout->gabbed about</li>
+        <li>talkedabout->talked about</li>
+        <li>talkedabout->joked about</li>
+        <li>talkedabout->quipped about</li>
+
+        <li>commentedabout->said something about</li>
+        <li>commentedabout->said a word about</li>
+        <li>commentedabout->made a comment about</li>
+        <li>commentedabout->commented about</li>
+        <li>commentedabout->told a joke about</li>
+
+      </rulesStrings>
+    </logRulesInitiator>
+  </WhoYouAre.WYAInteractionDef>
+
+  <WhoYouAre.WYAInteractionDef>
+    <defName>WYA_Chitchat_Skill</defName>
+    <label>chitchat</label>
+    <workerClass>WhoYouAre.InteractionWorker_Chitchat_Skill</workerClass>
+    <symbol>Things/Mote/SpeechSymbols/Chitchat</symbol>
+    <initiatorThought>Chitchat</initiatorThought>
+    <initiatorXpGainSkill>Social</initiatorXpGainSkill>
+    <initiatorXpGainAmount>4</initiatorXpGainAmount>
+    <recipientThought>Chitchat</recipientThought>
+    <logRulesInitiator>
+      <rulesStrings>
+
+        <li>r_logentry->[INITIATOR_nameDef] and [RECIPIENT_nameDef] [talkedabout] [TalkTopicLight].</li>
+        <li>r_logentry->[INITIATOR_nameDef] [talkedabout] [TalkTopicLight] with [RECIPIENT_nameDef].</li>
+        <li>r_logentry(p=0.8)->[INITIATOR_nameDef] [commentedabout] [TalkTopicLight] to [RECIPIENT_nameDef].</li>
+
+        <li>talkedabout(p=4)->chatted about</li>
+        <li>talkedabout->shared a word about</li>
+        <li>talkedabout->spoke about</li>
+        <li>talkedabout->gabbed about</li>
+        <li>talkedabout->talked about</li>
+        <li>talkedabout->joked about</li>
+        <li>talkedabout->quipped about</li>
+
+        <li>commentedabout->said something about</li>
+        <li>commentedabout->said a word about</li>
+        <li>commentedabout->made a comment about</li>
+        <li>commentedabout->commented about</li>
+        <li>commentedabout->told a joke about</li>
+
+      </rulesStrings>
+    </logRulesInitiator>
+  </WhoYouAre.WYAInteractionDef>
+  
+  <WhoYouAre.WYAInteractionDef>
+    <defName>WYA_DeepTalk</defName>
+    <label>deep talk</label>
+    <workerClass>WhoYouAre.InteractionWorker_DeepTalk_Backstory</workerClass>
+    <symbol>Things/Mote/SpeechSymbols/DeepTalk</symbol>
+    <initiatorThought>DeepTalk</initiatorThought>
+    <initiatorXpGainSkill>Social</initiatorXpGainSkill>
+    <initiatorXpGainAmount>10</initiatorXpGainAmount>
+    <recipientThought>DeepTalk</recipientThought>
+    <logRulesInitiator>
+      <rulesStrings>
+        
+        <li>r_logentry->[INITIATOR_nameDef] and [RECIPIENT_nameDef] [talkedabout] [subject].</li>
+        <li>r_logentry->[INITIATOR_nameDef] [talkedabout] [subject] with [RECIPIENT_nameDef].</li>
+
+        <li>talkedabout->communicated thoughts about</li>
+        <li>talkedabout->exchanged thoughts about</li>
+        <li>talkedabout->exchanged ideas about</li>
+        <li>talkedabout->shared views on</li>
+        <li>talkedabout->shared beliefs on</li>
+        <li>talkedabout->discussed the topic of</li>
+        <li>talkedabout->had a heartfelt conversation about</li>
+        <li>talkedabout->talked quietly about</li>
+        <li>talkedabout->talked deeply about</li>
+        <li>talkedabout->connected on the topic of</li>
+
+        <li>subject->[TalkTopicHeavy]</li>
+      </rulesStrings>
+    </logRulesInitiator>
+  </WhoYouAre.WYAInteractionDef>
+  
+</Defs>

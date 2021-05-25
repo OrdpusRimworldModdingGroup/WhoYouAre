@@ -1,0 +1,8 @@
+<Patch>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[@Name="BasePawn"]/comps</xpath>
+    <value>
+      <li Class="WhoYouAre.CompProperties_PawnInfo"></li>
+    </value>
+  </Operation>
+</Patch>

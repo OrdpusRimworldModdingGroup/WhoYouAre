@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>Who You Are</name>
+  <author>ordpus</author>
+  <supportedVersions>
+      <li>1.2</li>
+   </supportedVersions>
+   <packageId>ordpus.whoyouare</packageId>
+  <description>Some Self used functions</description>
+</ModMetaData>
