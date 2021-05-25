@@ -47,6 +47,7 @@
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__CharacterCardUtility.cs" />
     <Compile Include="WhoYouAre\Interaction\InteractionWorker_DeepTalk.cs" />
     <Compile Include="WhoYouAre\Interaction\InteractionWorker_Chitchat.cs" />
+    <Compile Include="WhoYouAre\Patches\RuinThingSetMaker.cs" />
     <Compile Include="WhoYouAre\Util\DictScribeUtil.cs" />
     <Compile Include="WhoYouAre\Util\InteractionWorkerUtil.cs" />
     <Compile Include="WhoYouAre\WhoYouAreMod.cs" />

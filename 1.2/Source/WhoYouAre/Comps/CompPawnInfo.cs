@@ -92,8 +92,6 @@ namespace WhoYouAre {
 
 		public static bool FilterSkill(Pawn pawn, SkillRecord skill, Thought thought = null, int relation = int.MinValue) {
 			// i am master
-			WhoYouAreModSettings.skillSettings.ToList().ForEach(x => Log.Message(x.Key + " " + x.Value));
-			Log.Message(skill.def.defName);
 			var setting = WhoYouAreModSettings.skillSettings[skill.def.defName];
 			if (setting.ForceShown) return true;
 			if (skill.Level > 14) return true;

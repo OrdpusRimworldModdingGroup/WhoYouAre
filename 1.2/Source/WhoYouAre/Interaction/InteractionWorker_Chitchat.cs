@@ -26,7 +26,7 @@ namespace WhoYouAre {
 	public class InteractionWorker_Chitchat_Skill : RimWorld.InteractionWorker_Chitchat {
 
 		public override float RandomSelectionWeight(Pawn initiator, Pawn recipient) {
-			return float.MinValue;
+			return 0;
 		}
 
 		public override void Interacted(Pawn initiator, Pawn recipient, List<RulePackDef> extraSentencePacks, out string letterText, out string letterLabel, out LetterDef letterDef, out LookTargets lookTargets) {
