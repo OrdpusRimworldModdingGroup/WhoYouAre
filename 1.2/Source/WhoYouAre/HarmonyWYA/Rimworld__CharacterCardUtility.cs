@@ -36,10 +36,20 @@ namespace WhoYouAre.HarmonyWYA {
 		internal static void Prefix(Rect rect, Pawn pawn, Action randomizeCallback = null, Rect creationRect = default(Rect)) {
 			var rect2 = new Rect();
 			rect2.x = rect.width / 4 * 3 + rect.x;
-			rect2.y = rect.y + 20;
-			rect2.width = Mathf.Min(rect.width / 5, 100);
+			rect2.y = rect.y + 50;
+			rect2.width = Mathf.Min(rect.width / 4, 150);
 			rect2.height = 24;
-			Widgets.ButtonText(rect2, "Debug: Unlock All Attributes");
+			if (DebugSettings.godMode && Widgets.ButtonText(rect2, "Debug: Unlock All")) {
+				var comp = pawn.GetComp<CompPawnInfo>();
+				var keys = comp.TraitInfo.Keys.ToList();
+				foreach (var k in keys) 
+					comp.TraitInfo[k] = true;
+				keys = comp.SkillInfo.Keys.ToList();
+				foreach (var k in keys) 
+					comp.SkillInfo[k] = true;
+				comp.BackStoryInfo[0] = true;
+				comp.BackStoryInfo[1] = true;
+			}
 		}
 
 		internal static List<Trait> FilterTraits(Pawn pawn) {
