@@ -85,7 +85,7 @@ namespace WhoYouAre {
 				// joined for a while
 				if (setting.GainByTime && setting.MinimumTimePassed < GenDate.DaysPassed - pawn.GetComp<CompPawnInfo>().dayJoined) return true;
 				// trait specific break
-				if (mentalBreak != null && setting.GainFromBreak && trait.def.defName == mentalBreak.requiredTrait.defName) return true;
+				if (mentalBreak != null && setting.GainFromBreak && trait.def.defName == (mentalBreak.requiredTrait?.defName ?? "")) return true;
 				// only one left
 				if (pawn.Faction.IsPlayer && PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_FreeColonists.Count == 1) return true;
 			}

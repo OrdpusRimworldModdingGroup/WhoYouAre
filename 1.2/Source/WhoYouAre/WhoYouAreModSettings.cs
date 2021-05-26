@@ -15,7 +15,7 @@ namespace WhoYouAre {
 		public static Dictionary<string, SkillSelection> skillDefaultSettings;
 		public static Dictionary<string, ThingSetMaker_Sum.Option> thingSetMakerOptions;
 		public static bool HideStartingPawns = false;
-		public static double ChitchatChance = 0.05, TraitChance = 0.2, BackStoryChance = 0.2;
+		public static double ChitchatChance = 0.01, TraitChance = 0.2, BackStoryChance = 0.2;
 		//public const double ChitchatChance = 1, TraitChance = 1, BackStoryChance = 1;
 		public static float MechSerumResurrectorChance = 0.25f;
 

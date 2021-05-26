@@ -60,7 +60,7 @@ namespace WhoYouAre {
 			var topic = temp[rand.Next(temp.Count)];
 			if (comp.TraitInfo[topic.def.defName]) return;
 			comp.TraitInfo[topic.def.defName] = true;
-			Find.LetterStack.ReceiveLetter("Trait Discovered", "Trait of " + initiator.Name + " has been discovered, which is " + topic.def.label, LetterDefOf.NeutralEvent, initiator);
+			Find.LetterStack.ReceiveLetter("Trait Discovered", "Trait of " + initiator.Name + " has been discovered from interactoin, which is " + topic.def.label, LetterDefOf.NeutralEvent, initiator);
 		}
 
 		internal static void EvaluateSkill(Pawn initiator, Pawn recipient) {
@@ -71,7 +71,7 @@ namespace WhoYouAre {
 			var topic = temp[rand.Next(temp.Count)];
 			if (comp.SkillInfo[topic.def.defName]) return;
 			comp.SkillInfo[topic.def.defName] = true;
-			Find.LetterStack.ReceiveLetter("Skill Evaluated", "Skill of " + initiator.Name + " has been evaluated, which is " + topic.def.label, LetterDefOf.NeutralEvent, initiator);
+			Find.LetterStack.ReceiveLetter("Skill Evaluated", "Skill of " + initiator.Name + " has been evaluated from interactoin, which is " + topic.def.label, LetterDefOf.NeutralEvent, initiator);
 		}
 
 		internal static void EvaluateBackstory(Pawn initiator, Pawn recipient) {
@@ -82,7 +82,7 @@ namespace WhoYouAre {
 			if (comp.BackStoryInfo[story]) return;
 			var topic = initiator.story.GetBackstory((BackstorySlot)story);
 			comp.BackStoryInfo[story] = true;
-			Find.LetterStack.ReceiveLetter("Backstory Found", "Backstory of " + initiator.Name + " has been found, which is " + topic.title, LetterDefOf.NeutralEvent, initiator);
+			Find.LetterStack.ReceiveLetter("Backstory Found", "Backstory of " + initiator.Name + " has been found from interactoin, which is " + topic.title, LetterDefOf.NeutralEvent, initiator);
 		}
 	}
 }
