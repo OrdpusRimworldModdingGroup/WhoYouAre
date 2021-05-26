@@ -18,6 +18,8 @@ namespace WhoYouAre {
 		public Dictionary<string, bool> TraitInfo {
 			get {
 				if (traitInfo == null) GenerateComp(pawn);
+				foreach (var trait in pawn.story.traits.allTraits)
+					if (!traitInfo.ContainsKey(trait.def.defName)) traitInfo[trait.def.defName] = false;
 				return traitInfo;
 			}
 		}
@@ -49,12 +51,12 @@ namespace WhoYouAre {
 			GenerateComp(pawn);
 		}
 
-		public List<Trait> GetAvaliableTraits(Thought thought = null, int relation = int.MinValue, MentalBreakDef mentalBreak = null) =>
+		public List<Trait> GetAvaliableTraits(ThoughtDef thought = null, int relation = int.MinValue, MentalBreakDef mentalBreak = null) =>
 			 pawn.story.traits.allTraits.FindAll(x => FilterTrait(pawn, x, thought, relation, mentalBreak));
 
 
-		public List<SkillRecord> GetAvaliableSkills(Thought thought = null, int relation = int.MinValue) =>
-			pawn.skills.skills.FindAll(x => FilterSkill(pawn, x, thought, relation));
+		public List<SkillRecord> GetAvaliableSkills(int relation = int.MinValue) =>
+			pawn.skills.skills.FindAll(x => FilterSkill(pawn, x, relation));
 
 		public static void GenerateComp(Pawn pawn) {
 			var info = pawn.GetComp<CompPawnInfo>();
@@ -71,13 +73,13 @@ namespace WhoYouAre {
 			else info.dayJoined = int.MaxValue;
 		}
 
-		public static bool FilterTrait(Pawn pawn, Trait trait, Thought thought = null, int relation = int.MinValue, MentalBreakDef mentalBreak = null) {
+		public static bool FilterTrait(Pawn pawn, Trait trait, ThoughtDef thought = null, int relation = int.MinValue, MentalBreakDef mentalBreak = null) {
 			var setting = WhoYouAreModSettings.traitSettings[trait.def.defName];
 			// always shown
 			if (setting.ForceShown) return true;
 			// trait specific thought
 			if (Current.ProgramState == ProgramState.Playing) {
-				if (thought != null && setting.GainFromThought && thought.def.requiredTraits.Concat(thought.def.nullifyingTraits).Contains(trait.def)) return true;
+				if (thought != null && setting.GainFromThought && ((thought.requiredTraits?.Contains(trait.def) ?? false) || (thought.nullifyingTraits?.Contains(trait.def) ?? false))) return true;
 				// close relation
 				if (setting.GainFromInteraction && relation > setting.RelationThreshold) return true;
 				// joined for a while
@@ -90,11 +92,11 @@ namespace WhoYouAre {
 			return false;
 		}
 
-		public static bool FilterSkill(Pawn pawn, SkillRecord skill, Thought thought = null, int relation = int.MinValue) {
+		public static bool FilterSkill(Pawn pawn, SkillRecord skill, int relation = int.MinValue) {
 			// i am master
 			var setting = WhoYouAreModSettings.skillSettings[skill.def.defName];
 			if (setting.ForceShown) return true;
-			if (skill.Level > 14) return true;
+			if (setting.GainFromMaster && skill.Level > 14) return true;
 			if (Current.ProgramState == ProgramState.Playing) {
 				if (setting.GainFromInteraction && relation > setting.RelationThreshold) return true;
 				// joined for a while

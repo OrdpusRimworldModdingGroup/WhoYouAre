@@ -17,6 +17,23 @@
       	</traitData>
         <skillData>
         </skillData>
+        <thingSetMakerOption>
+          <li>
+            <key>ExtraMechSerumResurrector</key>
+            <value>
+              <thingSetMaker Class="ThingSetMaker_Count">
+                <fixedParams>
+                  <qualityGenerator>Reward</qualityGenerator>
+                  <filter>
+                    <thingDefs>
+                      <li>MechSerumResurrector</li>
+                    </thingDefs>
+                  </filter>
+                </fixedParams>
+              </thingSetMaker>
+            </value>
+          </li>
+        </thingSetMakerOption>
       </li>
     </modExtensions>
   </ThingDef>

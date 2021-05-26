@@ -42,12 +42,13 @@
     <Compile Include="WhoYouAre\ContentTrackerComponent.cs" />
     <Compile Include="WhoYouAre\Defs\WYAInteractionDef.cs" />
     <Compile Include="WhoYouAre\Defs\SettingExtension.cs" />
+    <Compile Include="WhoYouAre\HarmonyWYA\Verse__AI__MentalBreakWorker.cs" />
+    <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__SituationalThoughtHandler.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__Pawn.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__SkillUI.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__CharacterCardUtility.cs" />
     <Compile Include="WhoYouAre\Interaction\InteractionWorker_DeepTalk.cs" />
     <Compile Include="WhoYouAre\Interaction\InteractionWorker_Chitchat.cs" />
-    <Compile Include="WhoYouAre\Patches\RuinThingSetMaker.cs" />
     <Compile Include="WhoYouAre\Util\DictScribeUtil.cs" />
     <Compile Include="WhoYouAre\Util\InteractionWorkerUtil.cs" />
     <Compile Include="WhoYouAre\WhoYouAreMod.cs" />
@@ -73,6 +74,8 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="WhoYouAre\Patches\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
