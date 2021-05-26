@@ -58,9 +58,9 @@ namespace WhoYouAre {
 			var temp = comp.GetAvaliableTraits(relation: initiator.relations.OpinionOf(recipient));
 			if (temp.Count == 0) return;
 			var topic = temp[rand.Next(temp.Count)];
-			if (comp.TraitInfo[topic.def.defName]) return;
+			if (ModUtils.ShouldShow(initiator, !comp.TraitInfo[topic.def.defName])) Find.LetterStack.ReceiveLetter("Trait Discovered", "Trait of " + initiator.Name + " has been discovered from interactoin, which is " + topic.def.label, LetterDefOf.NeutralEvent, initiator);
 			comp.TraitInfo[topic.def.defName] = true;
-			Find.LetterStack.ReceiveLetter("Trait Discovered", "Trait of " + initiator.Name + " has been discovered from interactoin, which is " + topic.def.label, LetterDefOf.NeutralEvent, initiator);
+
 		}
 
 		internal static void EvaluateSkill(Pawn initiator, Pawn recipient) {
@@ -69,9 +69,8 @@ namespace WhoYouAre {
 			var temp = comp.GetAvaliableSkills(relation: initiator.relations.OpinionOf(recipient));
 			if (temp.Count == 0) return;
 			var topic = temp[rand.Next(temp.Count)];
-			if (comp.SkillInfo[topic.def.defName]) return;
+			if (ModUtils.ShouldShow(initiator, !comp.SkillInfo[topic.def.defName])) Find.LetterStack.ReceiveLetter("Skill Evaluated", "Skill of " + initiator.Name + " has been evaluated from interactoin, which is " + topic.def.label, LetterDefOf.NeutralEvent, initiator);
 			comp.SkillInfo[topic.def.defName] = true;
-			Find.LetterStack.ReceiveLetter("Skill Evaluated", "Skill of " + initiator.Name + " has been evaluated from interactoin, which is " + topic.def.label, LetterDefOf.NeutralEvent, initiator);
 		}
 
 		internal static void EvaluateBackstory(Pawn initiator, Pawn recipient) {
@@ -79,10 +78,10 @@ namespace WhoYouAre {
 			var comp = initiator.GetComp<CompPawnInfo>();
 			var story = rand.Next(2);
 			if (initiator.story.adulthood == null) story = 0;
-			if (comp.BackStoryInfo[story]) return;
 			var topic = initiator.story.GetBackstory((BackstorySlot)story);
+			if (ModUtils.ShouldShow(initiator, !comp.BackStoryInfo[story])) Find.LetterStack.ReceiveLetter("Backstory Found", "Backstory of " + initiator.Name + " has been found from interactoin, which is " + topic.title, LetterDefOf.NeutralEvent, initiator);
 			comp.BackStoryInfo[story] = true;
-			Find.LetterStack.ReceiveLetter("Backstory Found", "Backstory of " + initiator.Name + " has been found from interactoin, which is " + topic.title, LetterDefOf.NeutralEvent, initiator);
+
 		}
 	}
 }

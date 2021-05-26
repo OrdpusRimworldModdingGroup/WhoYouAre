@@ -51,6 +51,7 @@
     <Compile Include="WhoYouAre\Interaction\InteractionWorker_Chitchat.cs" />
     <Compile Include="WhoYouAre\Util\DictScribeUtil.cs" />
     <Compile Include="WhoYouAre\Util\InteractionWorkerUtil.cs" />
+    <Compile Include="WhoYouAre\Util\ModUtils.cs" />
     <Compile Include="WhoYouAre\WhoYouAreMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WhoYouAre\WhoYouAreModSettings.cs" />
