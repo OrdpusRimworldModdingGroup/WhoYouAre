@@ -58,14 +58,14 @@ namespace WhoYouAre.HarmonyWYA {
 		}
 
 		internal static List<Trait> FilterPawnTrait(TraitSet traits) {
-			if (Current.ProgramState != ProgramState.Playing && !WhoYouAreModSettings.HideStartingPawns) return traits.allTraits;
+			if (ModUtils.StartingOrDebug()) return traits.allTraits;
 			var pawn = (Pawn)TraitSetPawnInfo.GetValue(traits);
 			var list = FilterTraits(pawn);
 			return list;
 		}
 
 		internal static WorkTags FilterDisableTags(Pawn pawn) {
-			if (Current.ProgramState != ProgramState.Playing && !WhoYouAreModSettings.HideStartingPawns) return pawn.CombinedDisabledWorkTags;
+			if (ModUtils.StartingOrDebug()) return pawn.CombinedDisabledWorkTags;
 			var story = pawn.story;
 			var storyInfo = pawn.GetComp<CompPawnInfo>().BackStoryInfo;
 			var traits = FilterTraits(pawn);
@@ -105,7 +105,7 @@ namespace WhoYouAre.HarmonyWYA {
 		}
 
 		internal static Backstory FilterBackstory(Pawn_StoryTracker story, BackstorySlot slot) {
-			if (Current.ProgramState != ProgramState.Playing && !WhoYouAreModSettings.HideStartingPawns) return story.GetBackstory(slot);
+			if (ModUtils.StartingOrDebug()) return story.GetBackstory(slot);
 			var storyInfo = ((Pawn)Pawn_StoryTracker_pawnInfo.GetValue(story)).GetComp<CompPawnInfo>().BackStoryInfo;
 			if (storyInfo[(int)slot]) return story.GetBackstory(slot);
 			return null;

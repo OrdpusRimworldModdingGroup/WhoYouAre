@@ -47,6 +47,7 @@
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__Pawn.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__SkillUI.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__CharacterCardUtility.cs" />
+    <Compile Include="WhoYouAre\HarmonyWYA\Verse__Dialog_DebugSettingsMenu.cs" />
     <Compile Include="WhoYouAre\Interaction\InteractionWorker_DeepTalk.cs" />
     <Compile Include="WhoYouAre\Interaction\InteractionWorker_Chitchat.cs" />
     <Compile Include="WhoYouAre\Util\DictScribeUtil.cs" />
