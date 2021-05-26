@@ -9,6 +9,7 @@ using HarmonyLib;
 using RimWorld;
 using Verse;
 using WhoYouAre;
+using UnityEngine;
 
 namespace WhoYouAre.HarmonyWYA {
 
@@ -30,6 +31,15 @@ namespace WhoYouAre.HarmonyWYA {
 				} else yield return code;
 
 			}
+		}
+
+		internal static void Prefix(Rect rect, Pawn pawn, Action randomizeCallback = null, Rect creationRect = default(Rect)) {
+			var rect2 = new Rect();
+			rect2.x = rect.width / 4 * 3 + rect.x;
+			rect2.y = rect.y + 20;
+			rect2.width = Mathf.Min(rect.width / 5, 100);
+			rect2.height = 24;
+			Widgets.ButtonText(rect2, "Debug: Unlock All Attributes");
 		}
 
 		internal static List<Trait> FilterTraits(Pawn pawn) {
