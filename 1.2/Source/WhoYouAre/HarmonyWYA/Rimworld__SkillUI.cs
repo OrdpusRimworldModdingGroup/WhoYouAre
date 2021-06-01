@@ -41,8 +41,8 @@ namespace WhoYouAre.HarmonyWYA {
 		private static SkillRecord FilterSkill(SkillRecord skill) {
 			if (ModUtils.StartingOrDebug()) return skill;
 			var pawn = PawnInfo.GetValue(skill) as Pawn;
-			var info = pawn.GetComp<CompPawnInfo>().SkillInfo;
-			if (info[skill.def.defName] || (skill.def.disablingWorkTags & Rimworld__CharacterCardUtility__DrawCharacterCard.FilterDisableTags(pawn)) != 0) return skill;
+			var comp = pawn.GetComp<CompPawnInfo>();
+			if (comp.SkillState(skill) || (skill.def.disablingWorkTags & Rimworld__CharacterCardUtility__DrawCharacterCard.FilterDisableTags(pawn)) != 0) return skill;
 			return new SkillRecord(pawn, skill.def);
 		}
 

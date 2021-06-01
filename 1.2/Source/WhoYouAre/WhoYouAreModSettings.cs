@@ -7,6 +7,7 @@ using Verse;
 using RimWorld;
 
 namespace WhoYouAre {
+
 	[StaticConstructorOnStartup]
 	public class WhoYouAreModSettings : ModSettings {
 		public static Dictionary<string, TraitSelection> traitSettings = new Dictionary<string, TraitSelection>();

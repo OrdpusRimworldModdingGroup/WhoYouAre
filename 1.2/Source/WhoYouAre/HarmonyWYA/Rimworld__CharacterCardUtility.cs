@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define DEBUGDisableTags
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,20 +43,18 @@ namespace WhoYouAre.HarmonyWYA {
 			rect2.height = 24;
 			if (DebugSettings.godMode && Widgets.ButtonText(rect2, "Debug: Unlock All")) {
 				var comp = pawn.GetComp<CompPawnInfo>();
-				var keys = comp.TraitInfo.Keys.ToList();
-				foreach (var k in keys) 
-					comp.TraitInfo[k] = true;
-				keys = comp.SkillInfo.Keys.ToList();
-				foreach (var k in keys) 
-					comp.SkillInfo[k] = true;
+				foreach (var k in pawn.story.traits.allTraits)
+					comp.SetTraitState(k, true);
+				foreach (var k in pawn.skills.skills)
+					comp.SetSkillState(k, true);
 				comp.BackStoryInfo[0] = true;
 				comp.BackStoryInfo[1] = true;
 			}
 		}
 
 		internal static List<Trait> FilterTraits(Pawn pawn) {
-			var info = pawn.GetComp<CompPawnInfo>().TraitInfo;
-			return pawn.story.traits.allTraits.FindAll(x => info[x.def.defName]);
+			var comp = pawn.GetComp<CompPawnInfo>();
+			return pawn.story.traits.allTraits.FindAll(x => comp.TraitState(x));
 		}
 
 		internal static List<Trait> FilterPawnTrait(TraitSet traits) {
@@ -65,19 +65,51 @@ namespace WhoYouAre.HarmonyWYA {
 		}
 
 		internal static WorkTags FilterDisableTags(Pawn pawn) {
+#if DEBUGDisableTags
+			int debug_index = 0;
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
 			if (ModUtils.StartingOrDebug()) return pawn.CombinedDisabledWorkTags;
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
 			var story = pawn.story;
+			Log.Message("" + (story == null) + (pawn.GetComp<CompPawnInfo>() == null));
 			var storyInfo = pawn.GetComp<CompPawnInfo>().BackStoryInfo;
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
 			var traits = FilterTraits(pawn);
 			var result = WorkTags.None;
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
 			if (storyInfo[0]) result |= story?.childhood?.workDisables ?? WorkTags.None;
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
 			if (storyInfo[1]) result |= story?.adulthood?.workDisables ?? WorkTags.None;
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
 			foreach (var trait in traits)
 				result |= trait.def.disabledWorkTags;
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
 			pawn?.royalty?.AllTitlesForReading.ForEach(x => result |= x.conceited ? x.def.disabledWorkTags : WorkTags.None);
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
 			pawn?.health?.hediffSet?.hediffs.ForEach(x => result |= x?.CurStage?.disabledWorkTags ?? WorkTags.None);
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
 			foreach (QuestPart_WorkDisabled q in QuestUtility.GetWorkDisabledQuestPart(pawn))
 				result |= q.disabledWorkTags;
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
 			return result;
 		}
 	}
