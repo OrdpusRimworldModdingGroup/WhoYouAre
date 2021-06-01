@@ -13,6 +13,8 @@ namespace WhoYouAre {
 		public Pawn pawn => parent as Pawn;
 		public int dayJoined = int.MaxValue;
 
+		private static Random random = new Random();
+
 		private bool Generated => traitInfo != null && skillInfo != null && backStoryInfo != null;
 
 		public Dictionary<string, bool> TraitInfo {
@@ -26,6 +28,11 @@ namespace WhoYouAre {
 
 		public Dictionary<string, bool> SkillInfo {
 			get {
+				double traitChance = 0, skillChance = 0;
+				if (TradeSession.Active) {
+					traitChance = WhoYouAreModSettings.TradeTraitChance;
+					skillChance = WhoYouAreModSettings.TradeSkillChance;
+				}
 				if (skillInfo == null) GenerateComp(pawn);
 				return skillInfo;
 			}
@@ -33,7 +40,12 @@ namespace WhoYouAre {
 
 		public List<bool> BackStoryInfo {
 			get {
-				if (backStoryInfo == null) GenerateComp(pawn);
+				double traitChance = 0, skillChance = 0;
+				if (TradeSession.Active) {
+					traitChance = WhoYouAreModSettings.TradeTraitChance;
+					skillChance = WhoYouAreModSettings.TradeSkillChance;
+				}
+				if (backStoryInfo == null) GenerateComp(pawn, traitChance, skillChance);
 				return backStoryInfo;
 			}
 		}
@@ -51,35 +63,39 @@ namespace WhoYouAre {
 			GenerateComp(pawn);
 		}
 
-		public List<Trait> GetAvaliableTraits(ThoughtDef thought = null, int relation = int.MinValue, MentalBreakDef mentalBreak = null) =>
+		public List<Trait> GetAvaliableTraits(Thought thought = null, int relation = int.MinValue, MentalBreakDef mentalBreak = null) =>
 			 pawn.story.traits.allTraits.FindAll(x => FilterTrait(pawn, x, thought, relation, mentalBreak));
 
 
 		public List<SkillRecord> GetAvaliableSkills(int relation = int.MinValue) =>
 			pawn.skills.skills.FindAll(x => FilterSkill(pawn, x, relation));
 
-		public static void GenerateComp(Pawn pawn) {
+		public static void GenerateComp(Pawn pawn, double traitRate = 0, double skillRate = 0) {
 			var info = pawn.GetComp<CompPawnInfo>();
 			if (pawn.story == null) return;
 			if (info.Generated) return;
 			info.traitInfo = new Dictionary<string, bool>();
 			info.skillInfo = new Dictionary<string, bool>();
 			info.backStoryInfo = new List<bool>() { false, false };
-			foreach (var trait in pawn.story.traits.allTraits)
-				info.traitInfo[trait.def.defName] = FilterTrait(pawn, trait);
-			foreach (var skill in pawn.skills.skills)
-				info.skillInfo[skill.def.defName] = FilterSkill(pawn, skill);
+			foreach (var trait in pawn.story.traits.allTraits) {
+				if (random.NextDouble() < traitRate) info.traitInfo[trait.def.defName] = true;
+				else info.traitInfo[trait.def.defName] = FilterTrait(pawn, trait);
+			}
+			foreach (var skill in pawn.skills.skills) {
+				if (random.NextDouble() < skillRate) info.skillInfo[skill.def.defName] = true;
+				else info.skillInfo[skill.def.defName] = FilterSkill(pawn, skill);
+			}
 			if (pawn.Faction.IsPlayer) info.dayJoined = 0;
 			else info.dayJoined = int.MaxValue;
 		}
 
-		public static bool FilterTrait(Pawn pawn, Trait trait, ThoughtDef thought = null, int relation = int.MinValue, MentalBreakDef mentalBreak = null) {
+		public static bool FilterTrait(Pawn pawn, Trait trait, Thought thought = null, int relation = int.MinValue, MentalBreakDef mentalBreak = null) {
 			var setting = WhoYouAreModSettings.traitSettings[trait.def.defName];
 			// always shown
 			if (setting.ForceShown) return true;
 			// trait specific thought
 			if (Current.ProgramState == ProgramState.Playing) {
-				if (thought != null && setting.GainFromThought && ((thought.requiredTraits?.Contains(trait.def) ?? false) || (thought.nullifyingTraits?.Contains(trait.def) ?? false))) return true;
+				if (thought != null && setting.GainFromThought && ((thought.def.requiredTraits?.Contains(trait.def) ?? false) || (thought.def.nullifyingTraits?.Contains(trait.def) ?? false))) return true;
 				// close relation
 				if (setting.GainFromInteraction && relation > setting.RelationThreshold) return true;
 				// joined for a while
