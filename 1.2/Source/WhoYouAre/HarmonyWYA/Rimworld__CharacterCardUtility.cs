@@ -1,4 +1,4 @@
-﻿#define DEBUGDisableTags
+﻿//#define DEBUGDisableTags
 
 using System;
 using System.Collections.Generic;
@@ -52,19 +52,15 @@ namespace WhoYouAre.HarmonyWYA {
 			}
 		}
 
-		internal static List<Trait> FilterTraits(Pawn pawn) {
-			var comp = pawn.GetComp<CompPawnInfo>();
-			return pawn.story.traits.allTraits.FindAll(x => comp.TraitState(x));
-		}
-
 		internal static List<Trait> FilterPawnTrait(TraitSet traits) {
 			if (ModUtils.StartingOrDebug()) return traits.allTraits;
 			var pawn = (Pawn)TraitSetPawnInfo.GetValue(traits);
-			var list = FilterTraits(pawn);
-			return list;
+			return pawn.GetComp<CompPawnInfo>().GetKnownTraits();
 		}
 
-		internal static WorkTags FilterDisableTags(Pawn pawn) {
+		internal static WorkTags FilterDisableTags(Pawn pawn) => FilterDisableTagsUtil(pawn);
+
+		internal static WorkTags FilterDisableTagsUtil(Pawn pawn, bool ignoreHealth = false) {
 #if DEBUGDisableTags
 			int debug_index = 0;
 			Log.Message("FilterDisableTags " + debug_index++);
@@ -74,12 +70,11 @@ namespace WhoYouAre.HarmonyWYA {
 			Log.Message("FilterDisableTags " + debug_index++);
 #endif
 			var story = pawn.story;
-			Log.Message("" + (story == null) + (pawn.GetComp<CompPawnInfo>() == null));
 			var storyInfo = pawn.GetComp<CompPawnInfo>().BackStoryInfo;
 #if DEBUGDisableTags
 			Log.Message("FilterDisableTags " + debug_index++);
 #endif
-			var traits = FilterTraits(pawn);
+			var traits = pawn.GetComp<CompPawnInfo>().GetKnownTraits();
 			var result = WorkTags.None;
 #if DEBUGDisableTags
 			Log.Message("FilterDisableTags " + debug_index++);
@@ -101,7 +96,7 @@ namespace WhoYouAre.HarmonyWYA {
 #if DEBUGDisableTags
 			Log.Message("FilterDisableTags " + debug_index++);
 #endif
-			pawn?.health?.hediffSet?.hediffs.ForEach(x => result |= x?.CurStage?.disabledWorkTags ?? WorkTags.None);
+			if (!ignoreHealth) pawn?.health?.hediffSet?.hediffs.ForEach(x => result |= x?.CurStage?.disabledWorkTags ?? WorkTags.None);
 #if DEBUGDisableTags
 			Log.Message("FilterDisableTags " + debug_index++);
 #endif

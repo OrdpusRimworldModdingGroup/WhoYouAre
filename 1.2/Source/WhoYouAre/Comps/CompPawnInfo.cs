@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 using Verse;
 using RimWorld;
 using HarmonyLib;
@@ -17,6 +18,7 @@ namespace WhoYouAre {
 		public int dayJoined = int.MaxValue;
 
 		private static Random random = new Random();
+		private static FieldInfo pawnPrioritiesInfo = AccessTools.DeclaredField(typeof(Pawn_WorkSettings), "priorities");
 
 		private bool Generated => traitInfo != null && skillInfo != null && backStoryInfo != null;
 
@@ -41,6 +43,25 @@ namespace WhoYouAre {
 			}
 		}
 
+		public List<bool> BackStoryInfo {
+			get {
+				double traitChance = 0, skillChance = 0;
+				if (TradeSession.Active) {
+					traitChance = WhoYouAreModSettings.TradeTraitChance;
+					skillChance = WhoYouAreModSettings.TradeSkillChance;
+				}
+				if (backStoryInfo == null) GenerateComp(pawn, traitChance, skillChance);
+				return backStoryInfo;
+			}
+		}
+
+		private Dictionary<WorkTypeDef, int> WorkInfo {
+			get {
+				if (workInfo == null) GenerateComp(pawn);
+				return workInfo;
+			}
+		}
+
 		public bool TraitState(Trait trait) {
 			if (TraitInfo.ContainsKey(trait.def.defName)) return TraitInfo[trait.def.defName];
 			var result = FilterTrait(pawn, trait);
@@ -55,6 +76,12 @@ namespace WhoYouAre {
 			return result;
 		}
 
+		public int WorkState(WorkTypeDef work) {
+			if (WorkInfo.ContainsKey(work)) return WorkInfo[work];
+			WorkInfo[work] = 0;
+			return 0;
+		}
+
 		public void SetTraitState(Trait trait, bool state = false) {
 			TraitInfo[trait.def.defName] = state;
 		}
@@ -63,19 +90,12 @@ namespace WhoYouAre {
 			SkillInfo[skill.def.defName] = state;
 		}
 
-		public List<bool> BackStoryInfo {
-			get {
-				double traitChance = 0, skillChance = 0;
-				if (TradeSession.Active) {
-					traitChance = WhoYouAreModSettings.TradeTraitChance;
-					skillChance = WhoYouAreModSettings.TradeSkillChance;
-				}
-				if (backStoryInfo == null) GenerateComp(pawn, traitChance, skillChance);
-				return backStoryInfo;
-			}
+		public void SetWorkState(WorkTypeDef work, int state = 0) {
+			WorkInfo[work] = state;
 		}
 
 		private Dictionary<string, bool> traitInfo, skillInfo;
+		private Dictionary<WorkTypeDef, int> workInfo;
 		private List<bool> backStoryInfo;
 
 		CompProperties_PawnInfo Props => props as CompProperties_PawnInfo;
@@ -88,12 +108,24 @@ namespace WhoYouAre {
 			//GenerateComp(pawn);
 		}
 
+		public List<Trait> GetKnownTraits() => pawn.story.traits.allTraits.FindAll(x => TraitState(x));
+
+		public List<SkillRecord> GetKnownSkills() => pawn.skills.skills.FindAll(x => SkillState(x));
+
+		public List<Backstory> GetKnownBackstories() {
+			var result = new List<Backstory>(2);
+			if (BackStoryInfo[0]) result.Add(pawn.story.childhood);
+			if (BackStoryInfo[1]) result.Add(pawn.story.adulthood);
+			return result;
+		}
+
 		public List<Trait> GetAvaliableTraits(Thought_Situational thought = null, int relation = int.MinValue, MentalBreakDef mentalBreak = null) =>
 			 pawn.story.traits.allTraits.FindAll(x => FilterTrait(pawn, x, thought, relation, mentalBreak));
 
 
 		public List<SkillRecord> GetAvaliableSkills(int relation = int.MinValue) =>
 			pawn.skills.skills.FindAll(x => FilterSkill(pawn, x, relation));
+
 
 		public static void GenerateComp(Pawn pawn, double traitRate = 0, double skillRate = 0) {
 #if DEBUGGenerateComp
@@ -108,6 +140,7 @@ namespace WhoYouAre {
 #endif
 			info.traitInfo = new Dictionary<string, bool>();
 			info.skillInfo = new Dictionary<string, bool>();
+			info.workInfo = new Dictionary<WorkTypeDef, int>();
 			info.backStoryInfo = new List<bool>() { false, false };
 			foreach (var trait in pawn.story.traits.allTraits) {
 #if DEBUGGenerateComp
@@ -132,6 +165,8 @@ namespace WhoYouAre {
 				Log.Message("GenerateComp skills " + skill.def.defName + " " + i + " " + j++);
 #endif
 			}
+			foreach (var work in (pawnPrioritiesInfo.GetValue(pawn.workSettings) as DefMap<WorkTypeDef, int>))
+				info.workInfo[work.Key] = work.Value;
 #if DEBUGGenerateComp
 			Log.Message("GenerateComp " + i++);
 #endif
@@ -142,7 +177,7 @@ namespace WhoYouAre {
 #endif
 		}
 
-		public static bool FilterTrait(Pawn pawn, Trait trait, Thought_Situational thought = null, int relation = int.MinValue, MentalBreakDef mentalBreak = null) {
+		public static bool FilterTrait(Pawn pawn, Trait trait, Thought_Situational thought = null, int relation = -1000, MentalBreakDef mentalBreak = null) {
 #if DEBUGFilterTrait
 			int i = 0;
 			Log.Message("FilterTrait " + i++);
@@ -159,7 +194,12 @@ namespace WhoYouAre {
 				int j = 0;
 				Log.Message("FilterTrait " + i + " " + j++);
 #endif
-				if (thought != null && setting.GainFromThought && thought.Active && ((thought.def.requiredTraits?.Contains(trait.def) ?? false) || (thought.def.nullifyingTraits?.Contains(trait.def) ?? false))) return true;
+				if (thought != null && setting.GainFromThought) {
+					thought.RecalculateState();
+					bool hasTrait = thought.def.requiredTraits?.Contains(trait.def) ?? false;
+					if (!hasTrait) hasTrait |= thought.def.nullifyingTraits?.Contains(trait.def) ?? false;
+					if (thought.Active && hasTrait) return true;
+				}
 #if DEBUGFilterTrait
 				Log.Message("FilterTrait " + i + " " + j++);
 #endif
@@ -169,7 +209,7 @@ namespace WhoYouAre {
 				Log.Message("FilterTrait " + i + " " + j++);
 #endif
 				// joined for a while
-				if (setting.GainByTime && setting.MinimumTimePassed < GenDate.DaysPassed - pawn.GetComp<CompPawnInfo>().dayJoined) return true;
+				//if (setting.GainByTime && setting.MinimumTimePassed < GenDate.DaysPassed - pawn.GetComp<CompPawnInfo>().dayJoined) return true;
 #if DEBUGFilterTrait
 				Log.Message("FilterTrait " + i + " " + j++);
 #endif
@@ -179,7 +219,7 @@ namespace WhoYouAre {
 				Log.Message("FilterTrait " + i + " " + j++);
 #endif
 				// only one left
-				if (pawn.Faction?.IsPlayer ?? false && PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_FreeColonists.Count == 1) return true;
+				//if (pawn.Faction?.IsPlayer ?? false && PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_FreeColonists.Count == 1) return true;
 #if DEBUGFilterTrait
 				Log.Message("FilterTrait " + i + " " + j++);
 #endif
@@ -195,7 +235,7 @@ namespace WhoYouAre {
 			if (Current.ProgramState == ProgramState.Playing) {
 				if (setting.GainFromInteraction && relation > setting.RelationThreshold) return true;
 				// joined for a while
-				if (setting.GainByTime && setting.MinimumTimePassed < GenDate.DaysPassed - pawn.GetComp<CompPawnInfo>().dayJoined) return true;
+				//if (setting.GainByTime && setting.MinimumTimePassed < GenDate.DaysPassed - pawn.GetComp<CompPawnInfo>().dayJoined) return true;
 				// passion
 				if (skill.passion != Passion.None && pawn.jobs?.curDriver?.ActiveSkill == skill.def) return true;
 			}
@@ -204,10 +244,11 @@ namespace WhoYouAre {
 
 		public override void PostExposeData() {
 			base.PostExposeData();
-			Scribe_Collections.Look(ref traitInfo, "traitInfo");
-			Scribe_Collections.Look(ref skillInfo, "skillInfo");
-			Scribe_Collections.Look(ref backStoryInfo, "backStoryInfo");
-			Scribe_Values.Look(ref dayJoined, "dayJoined");
+			Scribe_Collections.Look(ref traitInfo, "WYA.traitInfo");
+			Scribe_Collections.Look(ref skillInfo, "WYA.skillInfo");
+			Scribe_Collections.Look(ref backStoryInfo, "WYA.backStoryInfo");
+			Scribe_Collections.Look(ref workInfo, "WYA.workInfo");
+			Scribe_Values.Look(ref dayJoined, "WYA.dayJoined");
 		}
 
 	}

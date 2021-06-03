@@ -1,5 +1,6 @@
 <loadFolders>
   <v1.2>
     <li>1.2</li>
+    <li IfModActive="Anbulbay.KurinContinue">Kurin/1.2</li>
   </v1.2>
 </loadFolders>
