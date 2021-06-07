@@ -1,0 +1,8 @@
+<Patch>
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/ThoughtDef[defName="Kurin_Treason"]/workerClass</xpath>
+    <value>
+      <workerClass>WYAKurinFixes.ThoughtWorker_Treason</workerClass>
+    </value>
+  </Operation>
+</Patch>
