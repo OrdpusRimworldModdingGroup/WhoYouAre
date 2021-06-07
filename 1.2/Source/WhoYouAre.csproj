@@ -42,6 +42,11 @@
     <Compile Include="WhoYouAre\ContentTrackerComponent.cs" />
     <Compile Include="WhoYouAre\Defs\WYAInteractionDef.cs" />
     <Compile Include="WhoYouAre\Defs\SettingExtension.cs" />
+    <Compile Include="WhoYouAre\HarmonyWYA\CompatibilityPatch\WorkTab__DrawUtilities.cs" />
+    <Compile Include="WhoYouAre\HarmonyWYA\CompatibilityPatch\WorkTab__PawnColumnWorker_WorkType.cs" />
+    <Compile Include="WhoYouAre\HarmonyWYA\CompatibilityPatch\WorkTab__PawnColumnWorker_WorkGiver.cs" />
+    <Compile Include="WhoYouAre\HarmonyWYA\CompatibilityPatch\WorkTab__PriorityTracker.cs" />
+    <Compile Include="WhoYouAre\HarmonyWYA\CompatibilityPatch\BetterPawnControl__WorkManager.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__WidgetsWork.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__Pawn_SkillTracker.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__Pawn_WorkSettings.cs" />
@@ -50,12 +55,14 @@
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__Pawn.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__SkillUI.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__CharacterCardUtility.cs" />
+    <Compile Include="WhoYouAre\HarmonyWYA\Verse__GameInitData.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\Verse__Dialog_DebugSettingsMenu.cs" />
     <Compile Include="WhoYouAre\Interaction\InteractionWorker_DeepTalk.cs" />
     <Compile Include="WhoYouAre\Interaction\InteractionWorker_Chitchat.cs" />
     <Compile Include="WhoYouAre\Util\DictScribeUtil.cs" />
     <Compile Include="WhoYouAre\Util\InteractionWorkerUtil.cs" />
     <Compile Include="WhoYouAre\Util\ModUtils.cs" />
+    <Compile Include="WhoYouAre\Util\RefInfo.cs" />
     <Compile Include="WhoYouAre\WhoYouAreMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WhoYouAre\WhoYouAreModSettings.cs" />
@@ -70,6 +77,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Xml" />
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
@@ -79,8 +87,6 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="WhoYouAre\Patches\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

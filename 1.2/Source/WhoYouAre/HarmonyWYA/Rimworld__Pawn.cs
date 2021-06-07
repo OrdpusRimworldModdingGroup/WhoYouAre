@@ -24,4 +24,13 @@ namespace WhoYouAre.HarmonyWYA {
 		}
 
 	}
+
+	//[HarmonyPatch(typeof(Pawn), nameof(Pawn.SpawnSetup))]
+	//internal class Rimworld__Pawn__SpawnSetup {
+
+	//	internal static void Postfix(ref Pawn __instance, Map map, bool respawningAfterLoad) {
+	//		Log.Message(string.Join("\n", __instance.AllComps.Select(x => x.GetType().ToString())));
+	//	}
+
+	//}
 }

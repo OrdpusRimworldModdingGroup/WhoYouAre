@@ -1,5 +1,6 @@
 ﻿//#define DEBUGFilterTrait
 //#define DEBUGGenerateComp
+//#define DEBUGDisableTags
 
 using System;
 using System.Collections.Generic;
@@ -14,17 +15,22 @@ using HarmonyLib;
 namespace WhoYouAre {
 	public class CompPawnInfo : ThingComp {
 
+		private static bool workTab = WhoYouAreMod.WorkTab;
 		public Pawn pawn => parent as Pawn;
 		public int dayJoined = int.MaxValue;
 
 		private static Random random = new Random();
 		private static FieldInfo pawnPrioritiesInfo = AccessTools.DeclaredField(typeof(Pawn_WorkSettings), "priorities");
 
-		private bool Generated => traitInfo != null && skillInfo != null && backStoryInfo != null;
+		private bool Generated => traitInfo != null && skillInfo != null && backStoryInfo != null && workInfo != null;
 
 		private Dictionary<string, bool> TraitInfo {
 			get {
-				if (traitInfo == null) GenerateComp(pawn);
+				if (traitInfo == null) {
+					double r1, r2;
+					(r1, r2) = GetChances();
+					GenerateComp(pawn, r1, r2);
+				}
 				foreach (var trait in pawn.story.traits.allTraits)
 					if (!traitInfo.ContainsKey(trait.def.defName)) traitInfo[trait.def.defName] = false;
 				return traitInfo;
@@ -33,32 +39,45 @@ namespace WhoYouAre {
 
 		private Dictionary<string, bool> SkillInfo {
 			get {
-				double traitChance = 0, skillChance = 0;
-				if (TradeSession.Active) {
-					traitChance = WhoYouAreModSettings.TradeTraitChance;
-					skillChance = WhoYouAreModSettings.TradeSkillChance;
+				if (skillInfo == null) {
+					double r1, r2;
+					(r1, r2) = GetChances();
+					GenerateComp(pawn, r1, r2);
 				}
-				if (skillInfo == null) GenerateComp(pawn);
 				return skillInfo;
 			}
 		}
 
 		public List<bool> BackStoryInfo {
 			get {
-				double traitChance = 0, skillChance = 0;
-				if (TradeSession.Active) {
-					traitChance = WhoYouAreModSettings.TradeTraitChance;
-					skillChance = WhoYouAreModSettings.TradeSkillChance;
+				if (backStoryInfo == null) {
+					double r1, r2;
+					(r1, r2) = GetChances();
+					GenerateComp(pawn, r1, r2);
 				}
-				if (backStoryInfo == null) GenerateComp(pawn, traitChance, skillChance);
 				return backStoryInfo;
 			}
 		}
 
 		private Dictionary<WorkTypeDef, int> WorkInfo {
 			get {
-				if (workInfo == null) GenerateComp(pawn);
+				if (workInfo == null) {
+					double r1, r2;
+					(r1, r2) = GetChances();
+					GenerateComp(pawn, r1, r2);
+				}
 				return workInfo;
+			}
+		}
+
+		private Dictionary<WorkGiverDef, int[]> WorkGiverInfo {
+			get {
+				if(workGiverInfo == null) {
+					double r1, r2;
+					(r1, r2) = GetChances();
+					GenerateComp(pawn, r1, r2);
+				}
+				return workGiverInfo;
 			}
 		}
 
@@ -76,37 +95,40 @@ namespace WhoYouAre {
 			return result;
 		}
 
-		public int WorkState(WorkTypeDef work) {
-			if (WorkInfo.ContainsKey(work)) return WorkInfo[work];
-			WorkInfo[work] = 0;
-			return 0;
+		public int WorkState(WorkTypeDef work) => WorkInfo[work];
+
+		public int WorkState(WorkTypeDef work, int hour = -1) {
+			hour = GetHour(hour);
+			return work.WorkGivers().Min(x => WorkGiverInfo[x][hour]);
 		}
 
-		public void SetTraitState(Trait trait, bool state = false) {
-			TraitInfo[trait.def.defName] = state;
-		}
+		public int[] WorkStates(WorkTypeDef work) => ModUtils.WholeDay.Select(x => WorkState(work, x)).ToArray();
 
-		public void SetSkillState(SkillRecord skill, bool state = false) {
-			SkillInfo[skill.def.defName] = state;
-		}
+		public int WorkState(WorkGiverDef work, int hour = -1) => WorkGiverInfo[work][GetHour(hour)];
+
+		public int[] WorkStates(WorkGiverDef work) => WorkGiverInfo[work].Clone() as int[];
+
+		public void SetTraitState(Trait trait, bool state = false) => TraitInfo[trait.def.defName] = state;
+
+
+		public void SetSkillState(SkillRecord skill, bool state = false) => SkillInfo[skill.def.defName] = state;
 
 		public void SetWorkState(WorkTypeDef work, int state = 0) {
 			WorkInfo[work] = state;
 		}
 
+
+		public void SetWorkState(WorkGiverDef work, int state = 0, int hour = -1) {
+			//Log.Message(pawn.Name.ToStringFull + " " + work.workType.defName + " " + work.defName + " " + state + " " + hour);
+			WorkGiverInfo[work][GetHour(hour)] = state;
+		}
+
 		private Dictionary<string, bool> traitInfo, skillInfo;
 		private Dictionary<WorkTypeDef, int> workInfo;
+		private Dictionary<WorkGiverDef, int[]> workGiverInfo;
 		private List<bool> backStoryInfo;
 
 		CompProperties_PawnInfo Props => props as CompProperties_PawnInfo;
-
-		public override void Initialize(CompProperties props) {
-
-		}
-
-		public override void PostSpawnSetup(bool respawningAfterLoad) {
-			//GenerateComp(pawn);
-		}
 
 		public List<Trait> GetKnownTraits() => pawn.story.traits.allTraits.FindAll(x => TraitState(x));
 
@@ -126,6 +148,68 @@ namespace WhoYouAre {
 		public List<SkillRecord> GetAvaliableSkills(int relation = int.MinValue) =>
 			pawn.skills.skills.FindAll(x => FilterSkill(pawn, x, relation));
 
+		private (double, double) GetChances() {
+			double traitChance = 0, skillChance = 0;
+			if (TradeSession.Active || pawn.IsQuestLodger()) {
+				traitChance = WhoYouAreModSettings.TradeTraitChance;
+				skillChance = WhoYouAreModSettings.TradeSkillChance;
+			}
+			return (traitChance, skillChance);
+		}
+
+		public WorkTags DisabledWorkTags(bool ignoreHealth = true) {
+#if DEBUGDisableTags
+			int debug_index = 0;
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
+			if (ModUtils.StartingOrDebug()) return pawn.CombinedDisabledWorkTags;
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
+			var story = pawn.story;
+			var storyInfo = pawn.GetComp<CompPawnInfo>().BackStoryInfo;
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
+			var traits = pawn.GetComp<CompPawnInfo>().GetKnownTraits();
+			var result = WorkTags.None;
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
+			if (storyInfo[0]) result |= story?.childhood?.workDisables ?? WorkTags.None;
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
+			if (storyInfo[1]) result |= story?.adulthood?.workDisables ?? WorkTags.None;
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
+			foreach (var trait in traits)
+				result |= trait.def.disabledWorkTags;
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
+			pawn?.royalty?.AllTitlesForReading.ForEach(x => result |= x.conceited ? x.def.disabledWorkTags : WorkTags.None);
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
+			if (!ignoreHealth) pawn?.health?.hediffSet?.hediffs.ForEach(x => result |= x?.CurStage?.disabledWorkTags ?? WorkTags.None);
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
+			foreach (QuestPart_WorkDisabled q in QuestUtility.GetWorkDisabledQuestPart(pawn))
+				result |= q.disabledWorkTags;
+#if DEBUGDisableTags
+			Log.Message("FilterDisableTags " + debug_index++);
+#endif
+			return result;
+		}
+
+		public List<WorkTypeDef> DisabledWorkTypes(bool ignoreHealth = true) => pawn.GetDisabledWorkTypes().FindAll(x => (x.workTags & DisabledWorkTags(ignoreHealth)) != 0);
+
+		public bool WorkTypeDisabled(WorkTypeDef workDef, bool ignoreHealth = true) => (DisabledWorkTags(ignoreHealth) & workDef.workTags) != 0;
+
+
 
 		public static void GenerateComp(Pawn pawn, double traitRate = 0, double skillRate = 0) {
 #if DEBUGGenerateComp
@@ -141,6 +225,7 @@ namespace WhoYouAre {
 			info.traitInfo = new Dictionary<string, bool>();
 			info.skillInfo = new Dictionary<string, bool>();
 			info.workInfo = new Dictionary<WorkTypeDef, int>();
+			if (workTab) info.workGiverInfo = new Dictionary<WorkGiverDef, int[]>();
 			info.backStoryInfo = new List<bool>() { false, false };
 			foreach (var trait in pawn.story.traits.allTraits) {
 #if DEBUGGenerateComp
@@ -165,13 +250,15 @@ namespace WhoYouAre {
 				Log.Message("GenerateComp skills " + skill.def.defName + " " + i + " " + j++);
 #endif
 			}
-			foreach (var work in (pawnPrioritiesInfo.GetValue(pawn.workSettings) as DefMap<WorkTypeDef, int>))
-				info.workInfo[work.Key] = work.Value;
-#if DEBUGGenerateComp
-			Log.Message("GenerateComp " + i++);
-#endif
-			if (pawn.Faction?.IsPlayer ?? false) info.dayJoined = 0;
-			else info.dayJoined = int.MaxValue;
+
+			if (pawn.IsColonist) {
+				foreach (var work in (pawnPrioritiesInfo.GetValue(pawn.workSettings) as DefMap<WorkTypeDef, int>)) {
+					info.workInfo[work.Key] = work.Value;
+					if (workTab) work.Key.workGiversByPriority.ForEach(x => info.workGiverInfo[x] = new int[24].Select(x => work.Value).ToArray());
+				}
+				info.dayJoined = 0;
+
+			} else info.dayJoined = int.MaxValue;
 #if DEBUGGenerateComp
 			Log.Message("GenerateComp " + i++);
 #endif
@@ -242,12 +329,17 @@ namespace WhoYouAre {
 			return false;
 		}
 
+		private int GetHour(int hour = -1) {
+			return hour < 0 ? GenLocalDate.HourOfDay(pawn) : hour;
+		}
+
 		public override void PostExposeData() {
 			base.PostExposeData();
 			Scribe_Collections.Look(ref traitInfo, "WYA.traitInfo");
 			Scribe_Collections.Look(ref skillInfo, "WYA.skillInfo");
 			Scribe_Collections.Look(ref backStoryInfo, "WYA.backStoryInfo");
 			Scribe_Collections.Look(ref workInfo, "WYA.workInfo");
+			if (workTab) Scribe_Collections.Look(ref workGiverInfo, "WYA.workGiverInfo");
 			Scribe_Values.Look(ref dayJoined, "WYA.dayJoined");
 		}
 

@@ -19,6 +19,8 @@ namespace WhoYouAre {
 
 		public static WhoYouAreModSettings settings;
 
+		internal static bool WorkTab = ModLister.HasActiveModWithName("Work Tab");
+
 
 		public static Harmony Harmony { get => harmony; }
 
@@ -29,7 +31,22 @@ namespace WhoYouAre {
 
 		public WhoYouAreMod(ModContentPack content) : base(content) {
 			settings = GetSettings<WhoYouAreModSettings>();
+			var list = HarmonyLib.Harmony.GetAllPatchedMethods();
+			Log.Message(string.Join("\n", list.Select(x => x.ReflectedType.FullName + '.' + x.Name + '\n' + GetPatchesInfo(HarmonyLib.Harmony.GetPatchInfo(x)))));
+			Log.Message("Has worktab " + WorkTab);
 		}
+
+		private static string GetPatchesInfo(Patches patch) {
+			var tmp = string.Join("\n\t\t", patch.Prefixes.Select(GetPatchInfo));
+			var result = "\tPrefix :: " + (string.IsNullOrEmpty(tmp) ? "" : "\n\t\t" + tmp) + '\n';
+			tmp = string.Join("\n\t\t", patch.Postfixes.Select(GetPatchInfo));
+			result += "\tPostfix :: " + (string.IsNullOrEmpty(tmp) ? "" : "\n\t\t" + tmp) + '\n';
+			tmp = string.Join("\n\t\t", patch.Transpilers.Select(GetPatchInfo));
+			result += "\tTranspiler ::" + (string.IsNullOrEmpty(tmp) ? "" : "\n\t\t" + tmp);
+			return result;
+		}
+
+		private static string GetPatchInfo(Patch patch) => patch.owner + " " + patch.priority + " " + patch.PatchMethod.Module.Assembly.GetName().Name;
 
 		public override void DoSettingsWindowContents(Rect canvas) {
 			float lineHeight = Text.LineHeight;

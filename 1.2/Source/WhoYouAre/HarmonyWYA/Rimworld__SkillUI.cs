@@ -17,13 +17,9 @@ namespace WhoYouAre.HarmonyWYA {
 	[HarmonyPatch(typeof(SkillUI), nameof(SkillUI.DrawSkill), typeof(SkillRecord), typeof(Rect), typeof(SkillUI.SkillDrawMode), typeof(string))]
 	internal class Rimworld__SkillUI__DrawSkill {
 
-		private static MethodInfo FilterDisabledInfo = AccessTools.DeclaredMethod(typeof(Rimworld__SkillUI__DrawSkill), nameof(FilterDisabled));
-
 		private static MethodInfo FilterSkillInfo = AccessTools.DeclaredMethod(typeof(Rimworld__SkillUI__DrawSkill), nameof(FilterSkillInfo));
 
 		private static FieldInfo PawnInfo = AccessTools.DeclaredField(typeof(SkillRecord), "pawn");
-
-		private static MethodInfo GetTotallyDisabledInfo = AccessTools.DeclaredPropertyGetter(typeof(SkillRecord), nameof(SkillRecord.TotallyDisabled));
 
 
 		internal static void Prefix(ref SkillRecord skill, Rect holdingRect, SkillUI.SkillDrawMode mode, string tooltipPrefix = "") {
@@ -31,9 +27,12 @@ namespace WhoYouAre.HarmonyWYA {
 		}
 
 		internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+			var info1 = AccessTools.DeclaredPropertyGetter(typeof(SkillRecord), nameof(SkillRecord.TotallyDisabled));
+			var info2 = AccessTools.DeclaredMethod(typeof(Rimworld__SkillUI__DrawSkill), nameof(FilterDisabled));
+
 			foreach (var code in instructions) {
-				if (code.opcode == OpCodes.Callvirt && code.OperandIs(GetTotallyDisabledInfo)) {
-					yield return new CodeInstruction(OpCodes.Call, FilterDisabledInfo);
+				if (code.opcode == OpCodes.Callvirt && code.OperandIs(info1)) {
+					yield return new CodeInstruction(OpCodes.Call, info2);
 				} else yield return code;
 			}
 		}

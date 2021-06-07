@@ -5,4 +5,33 @@
       <li Class="WhoYouAre.CompProperties_PawnInfo"></li>
     </value>
   </Operation>
+
+  <Operation Class="PatchOperationFindMod">
+    <mods>
+      <li>Dragonian Race</li>
+    </mods>
+
+    <match Class="PatchOperationAdd">
+      <xpath>/Defs/ThingDef[@Name="DR_PawnBase"]/comps</xpath>
+      <value>
+        <li Class="WhoYouAre.CompProperties_PawnInfo"></li>
+      </value>
+    </match>
+
+  </Operation>
+
+  <Operation Class="PatchOperationFindMod">
+    <mods>
+      <li>Rabbie The Moonrabbit race</li>
+    </mods>
+    
+    <match Class="PatchOperationAdd">
+      <xpath>/Defs/ThingDef[@Name="RB_PawnBase"]/comps</xpath>
+      <value>
+        <li Class="WhoYouAre.CompProperties_PawnInfo"></li>
+      </value>
+    </match>
+
+  </Operation>
+
 </Patch>

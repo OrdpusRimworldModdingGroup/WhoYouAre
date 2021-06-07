@@ -1,6 +1,4 @@
-﻿//#define DEBUGDisableTags
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,10 +41,8 @@ namespace WhoYouAre.HarmonyWYA {
 			rect2.height = 24;
 			if (DebugSettings.godMode && Widgets.ButtonText(rect2, "Debug: Unlock All")) {
 				var comp = pawn.GetComp<CompPawnInfo>();
-				foreach (var k in pawn.story.traits.allTraits)
-					comp.SetTraitState(k, true);
-				foreach (var k in pawn.skills.skills)
-					comp.SetSkillState(k, true);
+				pawn.story.traits.allTraits.ForEach(x => comp.SetTraitState(x, true));
+				pawn.skills.skills.ForEach(x => comp.SetSkillState(x, true));
 				comp.BackStoryInfo[0] = true;
 				comp.BackStoryInfo[1] = true;
 			}
@@ -58,62 +54,14 @@ namespace WhoYouAre.HarmonyWYA {
 			return pawn.GetComp<CompPawnInfo>().GetKnownTraits();
 		}
 
-		internal static WorkTags FilterDisableTags(Pawn pawn) => FilterDisableTagsUtil(pawn);
+		internal static WorkTags FilterDisableTags(Pawn pawn) => pawn.GetComp<CompPawnInfo>().DisabledWorkTags();
 
-		internal static WorkTags FilterDisableTagsUtil(Pawn pawn, bool ignoreHealth = false) {
-#if DEBUGDisableTags
-			int debug_index = 0;
-			Log.Message("FilterDisableTags " + debug_index++);
-#endif
-			if (ModUtils.StartingOrDebug()) return pawn.CombinedDisabledWorkTags;
-#if DEBUGDisableTags
-			Log.Message("FilterDisableTags " + debug_index++);
-#endif
-			var story = pawn.story;
-			var storyInfo = pawn.GetComp<CompPawnInfo>().BackStoryInfo;
-#if DEBUGDisableTags
-			Log.Message("FilterDisableTags " + debug_index++);
-#endif
-			var traits = pawn.GetComp<CompPawnInfo>().GetKnownTraits();
-			var result = WorkTags.None;
-#if DEBUGDisableTags
-			Log.Message("FilterDisableTags " + debug_index++);
-#endif
-			if (storyInfo[0]) result |= story?.childhood?.workDisables ?? WorkTags.None;
-#if DEBUGDisableTags
-			Log.Message("FilterDisableTags " + debug_index++);
-#endif
-			if (storyInfo[1]) result |= story?.adulthood?.workDisables ?? WorkTags.None;
-#if DEBUGDisableTags
-			Log.Message("FilterDisableTags " + debug_index++);
-#endif
-			foreach (var trait in traits)
-				result |= trait.def.disabledWorkTags;
-#if DEBUGDisableTags
-			Log.Message("FilterDisableTags " + debug_index++);
-#endif
-			pawn?.royalty?.AllTitlesForReading.ForEach(x => result |= x.conceited ? x.def.disabledWorkTags : WorkTags.None);
-#if DEBUGDisableTags
-			Log.Message("FilterDisableTags " + debug_index++);
-#endif
-			if (!ignoreHealth) pawn?.health?.hediffSet?.hediffs.ForEach(x => result |= x?.CurStage?.disabledWorkTags ?? WorkTags.None);
-#if DEBUGDisableTags
-			Log.Message("FilterDisableTags " + debug_index++);
-#endif
-			foreach (QuestPart_WorkDisabled q in QuestUtility.GetWorkDisabledQuestPart(pawn))
-				result |= q.disabledWorkTags;
-#if DEBUGDisableTags
-			Log.Message("FilterDisableTags " + debug_index++);
-#endif
-			return result;
-		}
+
 	}
 
 	[StaticConstructorOnStartup]
 	internal class Rimworld__CharacterCardUtility__DrawCharacterCard__c__DisplayClass14_1__b__21 {
 
-		private static MethodInfo FilterBackstoryInfo = AccessTools.DeclaredMethod(typeof(Rimworld__CharacterCardUtility__DrawCharacterCard__c__DisplayClass14_1__b__21), nameof(FilterBackstory));
-		private static MethodInfo GetBackstoryInfo = AccessTools.DeclaredMethod(typeof(Pawn_StoryTracker), nameof(Pawn_StoryTracker.GetBackstory));
 		private static FieldInfo Pawn_StoryTracker_pawnInfo = AccessTools.DeclaredField(typeof(Pawn_StoryTracker), "pawn");
 
 		static Rimworld__CharacterCardUtility__DrawCharacterCard__c__DisplayClass14_1__b__21() {
@@ -123,9 +71,12 @@ namespace WhoYouAre.HarmonyWYA {
 		}
 
 		internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+			var info1 = AccessTools.DeclaredMethod(typeof(Pawn_StoryTracker), nameof(Pawn_StoryTracker.GetBackstory));
+			var info2 = AccessTools.DeclaredMethod(typeof(Rimworld__CharacterCardUtility__DrawCharacterCard__c__DisplayClass14_1__b__21), nameof(FilterBackstory));
+
 			foreach (var code in instructions) {
-				if (code.opcode == OpCodes.Callvirt && code.OperandIs(GetBackstoryInfo)) {
-					yield return new CodeInstruction(OpCodes.Call, FilterBackstoryInfo);
+				if (code.opcode == OpCodes.Callvirt && code.OperandIs(info1)) {
+					yield return new CodeInstruction(OpCodes.Call, info2);
 				} else yield return code;
 
 			}
