@@ -54,7 +54,7 @@ namespace WhoYouAre {
 
 		internal static void EvaluateTrait(Pawn initiator, Pawn recipient) {
 			(initiator, recipient) = ShufflePawn(initiator, recipient);
-			var comp = initiator.GetComp<CompPawnInfo>();
+			var comp = initiator.PawnInfo();
 			var temp = comp.GetAvaliableTraits(relation: initiator.relations.OpinionOf(recipient));
 			if (temp.Count == 0) return;
 			var topic = temp[rand.Next(temp.Count)];
@@ -65,7 +65,7 @@ namespace WhoYouAre {
 
 		internal static void EvaluateSkill(Pawn initiator, Pawn recipient) {
 			(initiator, recipient) = ShufflePawn(initiator, recipient);
-			var comp = initiator.GetComp<CompPawnInfo>();
+			var comp = initiator.PawnInfo();
 			var temp = comp.GetAvaliableSkills(relation: initiator.relations.OpinionOf(recipient));
 			if (temp.Count == 0) return;
 			var topic = temp[rand.Next(temp.Count)];
@@ -75,7 +75,7 @@ namespace WhoYouAre {
 
 		internal static void EvaluateBackstory(Pawn initiator, Pawn recipient) {
 			(initiator, recipient) = ShufflePawn(initiator, recipient);
-			var comp = initiator.GetComp<CompPawnInfo>();
+			var comp = initiator.PawnInfo();
 			var story = rand.Next(2);
 			if (initiator.story.adulthood == null) story = 0;
 			var topic = initiator.story.GetBackstory((BackstorySlot)story);

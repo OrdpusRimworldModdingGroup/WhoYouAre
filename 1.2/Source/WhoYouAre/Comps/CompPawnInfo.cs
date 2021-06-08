@@ -1,5 +1,5 @@
 ﻿//#define DEBUGFilterTrait
-#define DEBUGGenerateComp
+//#define DEBUGGenerateComp
 //#define DEBUGDisableTags
 
 using System;
@@ -95,6 +95,16 @@ namespace WhoYouAre {
 			return result;
 		}
 
+		public bool SkillState(SkillDef skill) {
+			if (SkillInfo.ContainsKey(skill.defName)) return SkillInfo[skill.defName];
+			return false;
+		}
+
+		public bool SkillTrait(TraitDef trait) {
+			if (TraitInfo.ContainsKey(trait.defName)) return SkillInfo[trait.defName];
+			return false;
+		}
+
 		public int WorkState(WorkTypeDef work) => WorkInfo[work];
 
 		public int WorkState(WorkTypeDef work, int hour = -1) {
@@ -130,9 +140,9 @@ namespace WhoYouAre {
 
 		CompProperties_PawnInfo Props => props as CompProperties_PawnInfo;
 
-		public List<Trait> GetKnownTraits() => pawn.story.traits.allTraits.FindAll(x => TraitState(x));
+		public List<Trait> KnownTraits => pawn.story.traits.allTraits.FindAll(x => TraitState(x));
 
-		public List<SkillRecord> GetKnownSkills() => pawn.skills.skills.FindAll(x => SkillState(x));
+		public List<SkillRecord> KnownSkills => pawn.skills.skills.FindAll(x => SkillState(x));
 
 		public List<Backstory> GetKnownBackstories() {
 			var result = new List<Backstory>(2);
@@ -167,11 +177,11 @@ namespace WhoYouAre {
 			Log.Message("FilterDisableTags " + debug_index++);
 #endif
 			var story = pawn.story;
-			var storyInfo = pawn.GetComp<CompPawnInfo>().BackStoryInfo;
+			var storyInfo = BackStoryInfo;
 #if DEBUGDisableTags
 			Log.Message("FilterDisableTags " + debug_index++);
 #endif
-			var traits = pawn.GetComp<CompPawnInfo>().GetKnownTraits();
+			var traits = KnownTraits;
 			var result = WorkTags.None;
 #if DEBUGDisableTags
 			Log.Message("FilterDisableTags " + debug_index++);
@@ -216,7 +226,7 @@ namespace WhoYouAre {
 			int i = 0;
 			Log.Message("GenerateComp " + i++);
 #endif
-			var info = pawn.GetComp<CompPawnInfo>();
+			var info = pawn.PawnInfo();
 			if (pawn.story == null) return;
 			if (info.Generated) return;
 #if DEBUGGenerateComp
@@ -300,7 +310,7 @@ namespace WhoYouAre {
 				Log.Message("FilterTrait " + i + " " + j++);
 #endif
 				// joined for a while
-				//if (setting.GainByTime && setting.MinimumTimePassed < GenDate.DaysPassed - pawn.GetComp<CompPawnInfo>().dayJoined) return true;
+				//if (setting.GainByTime && setting.MinimumTimePassed < GenDate.DaysPassed - pawn.PawnInfo().dayJoined) return true;
 #if DEBUGFilterTrait
 				Log.Message("FilterTrait " + i + " " + j++);
 #endif
@@ -326,7 +336,7 @@ namespace WhoYouAre {
 			if (Current.ProgramState == ProgramState.Playing) {
 				if (setting.GainFromInteraction && relation > setting.RelationThreshold) return true;
 				// joined for a while
-				//if (setting.GainByTime && setting.MinimumTimePassed < GenDate.DaysPassed - pawn.GetComp<CompPawnInfo>().dayJoined) return true;
+				//if (setting.GainByTime && setting.MinimumTimePassed < GenDate.DaysPassed - pawn.PawnInfo().dayJoined) return true;
 				// passion
 				if (skill.passion != Passion.None && pawn.jobs?.curDriver?.ActiveSkill == skill.def) return true;
 			}

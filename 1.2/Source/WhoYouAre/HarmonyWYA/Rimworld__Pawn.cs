@@ -19,8 +19,8 @@ namespace WhoYouAre.HarmonyWYA {
 
 		internal static void Postfix(ref Pawn __instance, Faction newFaction, Pawn recruiter = null) {
 			if (newFaction.IsPlayer) {
-				__instance.GetComp<CompPawnInfo>().dayJoined = GenDate.DaysPassed;
-			} else __instance.GetComp<CompPawnInfo>().dayJoined = int.MinValue;
+				__instance.PawnInfo().dayJoined = GenDate.DaysPassed;
+			} else __instance.PawnInfo().dayJoined = int.MinValue;
 		}
 
 	}

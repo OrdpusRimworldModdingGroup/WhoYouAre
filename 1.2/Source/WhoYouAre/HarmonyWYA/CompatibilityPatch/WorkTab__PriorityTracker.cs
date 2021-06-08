@@ -18,7 +18,7 @@ namespace WhoYouAre.HarmonyWYA.CompatibilityPatch {
 	[StaticConstructorOnStartup]
 	internal class WorkTab__PriorityTracker__SetPriority {
 
-		static FieldInfo pawnInfo = AccessTools.DeclaredField(AccessTools.TypeByName("WorkTab.PawnPriorityTracker"), "pawn");
+		static FieldInfo PawnInfo = AccessTools.DeclaredField(AccessTools.TypeByName("WorkTab.PawnPriorityTracker"), "pawn");
 
 		static WorkTab__PriorityTracker__SetPriority() {
 			var classType = AccessTools.TypeByName("WorkTab.PriorityTracker");
@@ -30,8 +30,8 @@ namespace WhoYouAre.HarmonyWYA.CompatibilityPatch {
 
 
 		internal static void Prefix(object __instance, WorkGiverDef workgiver, int priority, int hour, bool recache = true) {
-			var pawn = pawnInfo.GetValue(__instance) as Pawn;
-			pawn.GetComp<CompPawnInfo>().SetWorkState(workgiver, priority, hour);
+			var pawn = PawnInfo.GetValue(__instance) as Pawn;
+			pawn.PawnInfo().SetWorkState(workgiver, priority, hour);
 		}
 
 	}

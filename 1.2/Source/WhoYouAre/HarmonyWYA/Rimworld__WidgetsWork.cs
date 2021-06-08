@@ -38,12 +38,12 @@ namespace WhoYouAre.HarmonyWYA {
 		internal static bool FilterDisabled(Pawn pawn, WorkTypeDef workDef) {
 			var list = pawn.GetDisabledWorkTypes();
 			if (ModUtils.StartingOrDebug()) return list.Contains(workDef);
-			return pawn.GetComp<CompPawnInfo>().WorkTypeDisabled(workDef);
+			return pawn.PawnInfo().WorkTypeDisabled(workDef);
 		}
 
 		internal static int GetPriority(Pawn_WorkSettings instance, WorkTypeDef workDef) {
 			var pawn = Pawn_WorkSettingsPawnInfo.GetValue(instance) as Pawn;
-			var comp = pawn.GetComp<CompPawnInfo>();
+			var comp = pawn.PawnInfo();
 			return comp.WorkState(workDef);
 		}
 	}

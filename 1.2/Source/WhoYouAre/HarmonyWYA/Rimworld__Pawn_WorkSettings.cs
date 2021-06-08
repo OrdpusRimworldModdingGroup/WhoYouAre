@@ -20,7 +20,7 @@ namespace WhoYouAre.HarmonyWYA {
 
 		internal static void Prefix(Pawn_WorkSettings __instance, WorkTypeDef w, int priority) {
 			var pawn = Pawn_WorkSettingsPawnInfo.GetValue(__instance) as Pawn;
-			pawn.GetComp<CompPawnInfo>().SetWorkState(w, priority);
+			pawn.PawnInfo().SetWorkState(w, priority);
 		}
 
 		internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
@@ -64,10 +64,10 @@ namespace WhoYouAre.HarmonyWYA {
 			}
 		}
 
-		internal static List<WorkTypeDef> DisableWorkTypes(Pawn pawn, bool aBool = false) => pawn.GetComp<CompPawnInfo>().DisabledWorkTypes();
+		internal static List<WorkTypeDef> DisableWorkTypes(Pawn pawn, bool aBool = false) => pawn.PawnInfo().DisabledWorkTypes();
 
 
-		internal static bool WorkTypeIsDisabled(Pawn instance, WorkTypeDef workDef) => instance.GetComp<CompPawnInfo>().WorkTypeDisabled(workDef);
+		internal static bool WorkTypeIsDisabled(Pawn instance, WorkTypeDef workDef) => instance.PawnInfo().WorkTypeDisabled(workDef);
 
 
 	}

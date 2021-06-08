@@ -12,7 +12,6 @@ using HarmonyLib;
 
 namespace WhoYouAre {
 
-	[StaticConstructorOnStartup]
 	public static class ModUtils {
 
 		public static int[] WholeDay = new int[24].Select((x, i) => i).ToArray();
@@ -33,9 +32,12 @@ namespace WhoYouAre {
 		public static MethodInfo SkillRecordGetLevel = AccessTools.PropertyGetter(typeof(SkillRecord), nameof(SkillRecord.Level));
 		public static FieldInfo SkillRecordPawn = AccessTools.DeclaredField(typeof(SkillRecord), "pawn");
 		public static MethodInfo ModUtilsSkillLevel = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.SkillLevel));
+		public static MethodInfo SkillNeedValueFor = AccessTools.DeclaredMethod(typeof(SkillNeed), nameof(SkillNeed.ValueFor));
+		public static MethodInfo ModUtilsSkillValueFor = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.SkillValueFor));
+		public static FieldInfo TraitSetAllTraits = AccessTools.DeclaredField(typeof(TraitSet), nameof(TraitSet.allTraits));
+		public static FieldInfo TraitSetPawn = AccessTools.DeclaredField(typeof(TraitSet), "pawn");
+		public static MethodInfo ModUtilsAllTraits = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.AllTraits));
 
-		static ModUtils() {
-		}
 
 		public static bool ShouldShow(Pawn pawn, bool pawnUnlocked) {
 			bool isPlayer = pawn.Faction?.IsPlayer ?? false;
@@ -85,6 +87,18 @@ namespace WhoYouAre {
 			if (StartingOrDebug()) return instance.Level;
 			var res = (SkillRecordPawn.GetValue(instance) as Pawn).GetComp<CompPawnInfo>().SkillState(instance);
 			return res ? instance.Level : 0;
+		}
+
+		public static float SkillValueFor(SkillNeed instance, Pawn pawn) {
+			if (StartingOrDebug()) return (float)SkillNeedValueFor.Invoke(instance, new object[] { pawn });
+			var res = pawn.PawnInfo().SkillState(instance.skill) ? (float)SkillNeedValueFor.Invoke(instance, new object[] { pawn }) : 0;
+			return res;
+		}
+
+		public static List<Trait> AllTraits(TraitSet instance) {
+			if (StartingOrDebug()) return instance.allTraits;
+			var res = (TraitSetPawn.GetValue(instance) as Pawn).GetComp<CompPawnInfo>().KnownTraits;
+			return res;
 		}
 
 		internal static IEnumerable<CodeInstruction> TranspilerType(IEnumerable<CodeInstruction> instructions) {
@@ -146,12 +160,15 @@ namespace WhoYouAre {
 			}
 		}
 
+
 		public static List<TResult> Repeat<TResult>(this List<TResult> list, int count) {
 			var result = new List<TResult>();
 			for (int i = 0; i < count; i++)
 				result = result.Concat(list).ToList();
 			return result;
 		}
+
+		public static CompPawnInfo PawnInfo(this Pawn pawn) => pawn.GetComp<CompPawnInfo>();
 	}
 }
 

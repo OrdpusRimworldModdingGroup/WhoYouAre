@@ -20,7 +20,7 @@ namespace WhoYouAre.HarmonyWYA {
 		private static FieldInfo TraitSetAllTraitsInfo = AccessTools.DeclaredField(typeof(TraitSet), nameof(TraitSet.allTraits));
 		private static MethodInfo GetCombinedDisabledWorkTagsInfo = AccessTools.DeclaredPropertyGetter(typeof(Pawn), "CombinedDisabledWorkTags");
 		private static FieldInfo TraitSetPawnInfo = AccessTools.DeclaredField(typeof(TraitSet), "pawn");
-		//private static FieldInfo TraitSetPawnInfo = typeof(TraitSet).GetField("pawn", BindingFlags.NonPublic);
+		//private static FieldInfo TraitSetPawnInfo() = typeof(TraitSet).GetField("pawn", BindingFlags.NonPublic);
 
 		internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
 			foreach (var code in instructions) {
@@ -40,7 +40,7 @@ namespace WhoYouAre.HarmonyWYA {
 			rect2.width = Mathf.Min(rect.width / 4, 150);
 			rect2.height = 24;
 			if (DebugSettings.godMode && Widgets.ButtonText(rect2, "Debug: Unlock All")) {
-				var comp = pawn.GetComp<CompPawnInfo>();
+				var comp = pawn.PawnInfo();
 				pawn.story.traits.allTraits.ForEach(x => comp.SetTraitState(x, true));
 				pawn.skills.skills.ForEach(x => comp.SetSkillState(x, true));
 				comp.BackStoryInfo[0] = true;
@@ -51,10 +51,10 @@ namespace WhoYouAre.HarmonyWYA {
 		internal static List<Trait> FilterPawnTrait(TraitSet traits) {
 			if (ModUtils.StartingOrDebug()) return traits.allTraits;
 			var pawn = (Pawn)TraitSetPawnInfo.GetValue(traits);
-			return pawn.GetComp<CompPawnInfo>().GetKnownTraits();
+			return pawn.PawnInfo().KnownTraits;
 		}
 
-		internal static WorkTags FilterDisableTags(Pawn pawn) => pawn.GetComp<CompPawnInfo>().DisabledWorkTags();
+		internal static WorkTags FilterDisableTags(Pawn pawn) => pawn.PawnInfo().DisabledWorkTags();
 
 
 	}
@@ -62,7 +62,7 @@ namespace WhoYouAre.HarmonyWYA {
 	[StaticConstructorOnStartup]
 	internal class Rimworld__CharacterCardUtility__DrawCharacterCard__c__DisplayClass14_1__b__21 {
 
-		private static FieldInfo Pawn_StoryTracker_pawnInfo = AccessTools.DeclaredField(typeof(Pawn_StoryTracker), "pawn");
+		private static FieldInfo Pawn_StoryTracker_PawnInfo = AccessTools.DeclaredField(typeof(Pawn_StoryTracker), "pawn");
 
 		static Rimworld__CharacterCardUtility__DrawCharacterCard__c__DisplayClass14_1__b__21() {
 			Type innerClass = AccessTools.Inner(typeof(CharacterCardUtility), "<>c__DisplayClass14_1");
@@ -84,7 +84,7 @@ namespace WhoYouAre.HarmonyWYA {
 
 		internal static Backstory FilterBackstory(Pawn_StoryTracker story, BackstorySlot slot) {
 			if (ModUtils.StartingOrDebug()) return story.GetBackstory(slot);
-			var storyInfo = ((Pawn)Pawn_StoryTracker_pawnInfo.GetValue(story)).GetComp<CompPawnInfo>().BackStoryInfo;
+			var storyInfo = ((Pawn)Pawn_StoryTracker_PawnInfo.GetValue(story)).PawnInfo().BackStoryInfo;
 			if (storyInfo[(int)slot]) return story.GetBackstory(slot);
 			return null;
 		}

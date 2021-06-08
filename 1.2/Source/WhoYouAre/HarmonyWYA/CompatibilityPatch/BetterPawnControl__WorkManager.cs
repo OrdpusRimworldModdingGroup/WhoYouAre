@@ -42,7 +42,7 @@ namespace WhoYouAre.HarmonyWYA.CompatibilityPatch {
 			}
 		}
 
-		internal static int GetPriority(Pawn_WorkSettings instance, WorkTypeDef workDef) => (Pawn_WorkSettingsPawnInfo.GetValue(instance) as Pawn).GetComp<CompPawnInfo>().WorkState(workDef);
+		internal static int GetPriority(Pawn_WorkSettings instance, WorkTypeDef workDef) => (Pawn_WorkSettingsPawnInfo.GetValue(instance) as Pawn).PawnInfo().WorkState(workDef);
 
 	}
 }

@@ -18,7 +18,7 @@ namespace WhoYouAre.HarmonyWYA {
 
 		internal static void Postfix(ref MentalBreakWorker __instance, ref bool __result, Pawn pawn, string reason, bool causedByMood) {
 			if (!__result) return;
-			var comp = pawn.GetComp<CompPawnInfo>();
+			var comp = pawn.PawnInfo();
 			foreach (var trait in comp.GetAvaliableTraits(mentalBreak: __instance.def)) {
 				if (ModUtils.ShouldShow(pawn, comp.TraitState(trait))) ModUtils.MakeDiscoverLetter("Trait", trait.def.defName, pawn, "mental break");
 				comp.SetTraitState(trait, true);

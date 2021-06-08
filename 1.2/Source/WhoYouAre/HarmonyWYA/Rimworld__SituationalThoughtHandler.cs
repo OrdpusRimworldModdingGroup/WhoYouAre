@@ -30,7 +30,7 @@ namespace WhoYouAre.HarmonyWYA {
 
 		internal static void ApplyThoughtTrait(Pawn pawn, Thought_Situational thought) {
 			if (thought == null) return;
-			var comp = pawn.GetComp<CompPawnInfo>();
+			var comp = pawn.PawnInfo();
 			var setting = WhoYouAreModSettings.traitSettings;
 			foreach (var trait in comp.GetAvaliableTraits(thought: thought)) {
 				if (ModUtils.ShouldShow(pawn, comp.TraitState(trait))) ModUtils.MakeDiscoverLetter("Trait", trait.def.defName, pawn, "thought " + thought.def.defName);

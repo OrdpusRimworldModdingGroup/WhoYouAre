@@ -25,7 +25,7 @@ namespace WhoYouAre.HarmonyWYA {
 			if (workDef.relevantSkills.Count == 0) {
 				__result = 3f;
 			} else {
-				var comp = (Pawn_SkillTrackerPawnInfo.GetValue(__instance) as Pawn).GetComp<CompPawnInfo>();
+				var comp = (Pawn_SkillTrackerPawnInfo.GetValue(__instance) as Pawn).PawnInfo();
 				float num = 0f;
 				int count = 0;
 				for (int i = 0; i < workDef.relevantSkills.Count; i++) {
@@ -50,7 +50,7 @@ namespace WhoYouAre.HarmonyWYA {
 		internal static bool Prefix(Pawn_SkillTracker __instance, ref Passion __result, WorkTypeDef workDef) {
 			__result = Passion.None;
 			if (workDef.relevantSkills.Count == 0) return false;
-			var comp = (Pawn_SkillTrackerPawnInfo.GetValue(__instance) as Pawn).GetComp<CompPawnInfo>();
+			var comp = (Pawn_SkillTrackerPawnInfo.GetValue(__instance) as Pawn).PawnInfo();
 			for (int i = 0; i < workDef.relevantSkills.Count; i++) {
 				var skill = __instance.GetSkill(workDef.relevantSkills[i]);
 				if (comp.SkillState(skill)) {
