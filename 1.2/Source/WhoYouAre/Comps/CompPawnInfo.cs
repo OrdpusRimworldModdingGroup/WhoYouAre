@@ -1,5 +1,5 @@
 ﻿//#define DEBUGFilterTrait
-//#define DEBUGGenerateComp
+#define DEBUGGenerateComp
 //#define DEBUGDisableTags
 
 using System;
@@ -72,7 +72,7 @@ namespace WhoYouAre {
 
 		private Dictionary<WorkGiverDef, int[]> WorkGiverInfo {
 			get {
-				if(workGiverInfo == null) {
+				if (workGiverInfo == null) {
 					double r1, r2;
 					(r1, r2) = GetChances();
 					GenerateComp(pawn, r1, r2);
@@ -251,13 +251,17 @@ namespace WhoYouAre {
 #endif
 			}
 
-			if (pawn.IsColonist) {
-				foreach (var work in (pawnPrioritiesInfo.GetValue(pawn.workSettings) as DefMap<WorkTypeDef, int>)) {
-					info.workInfo[work.Key] = work.Value;
-					if (workTab) work.Key.workGiversByPriority.ForEach(x => info.workGiverInfo[x] = new int[24].Select(x => work.Value).ToArray());
-				}
-				info.dayJoined = 0;
+			static void GetPriority(CompPawnInfo comp, WorkTypeDef work, int priority) {
+				comp.workInfo[work] = priority;
+				if (workTab) work.workGiversByPriority.ForEach(x => comp.workGiverInfo[x] = new int[24].Select(x => priority).ToArray());
+			}
 
+			if (pawn.IsColonist) {
+				var workSetting = pawnPrioritiesInfo.GetValue(pawn.workSettings) as DefMap<WorkTypeDef, int>;
+				if (workSetting == null)
+					foreach (var work in DefDatabase<WorkTypeDef>.AllDefs) GetPriority(info, work, 3);
+				else foreach (var work in workSetting) GetPriority(info, work.Key, work.Value);
+				info.dayJoined = 0;
 			} else info.dayJoined = int.MaxValue;
 #if DEBUGGenerateComp
 			Log.Message("GenerateComp " + i++);

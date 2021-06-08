@@ -46,6 +46,9 @@
     <Compile Include="WhoYouAre\HarmonyWYA\CompatibilityPatch\WorkTab__WorkerAny.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\CompatibilityPatch\WorkTab__PriorityTracker.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\CompatibilityPatch\BetterPawnControl__WorkManager.cs" />
+    <Compile Include="WhoYouAre\HarmonyWYA\RimWorld__SkillNeed.cs" />
+    <Compile Include="WhoYouAre\HarmonyWYA\RimWorld__Trait.cs" />
+    <Compile Include="WhoYouAre\HarmonyWYA\RimWorld__StatWorker.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__WidgetsWork.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__Pawn_SkillTracker.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\Rimworld__Pawn_WorkSettings.cs" />

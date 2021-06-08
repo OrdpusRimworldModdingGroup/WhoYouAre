@@ -28,6 +28,11 @@ namespace WhoYouAre {
 		public static MethodInfo Pawn_Extensions__GetPriorityType = AccessTools.DeclaredMethod(AccessTools.TypeByName("WorkTab.Pawn_Extensions"), "GetPriority", new Type[] { typeof(Pawn), typeof(WorkTypeDef), typeof(int) });
 		public static MethodInfo PawnGetDisabledWorkTypes = AccessTools.DeclaredMethod(typeof(Pawn), nameof(Pawn.GetDisabledWorkTypes));
 		public static MethodInfo ModUtilsGetDisabledWorkTypes = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.GetDisabledWorkTypes));
+		public static MethodInfo Pawn_SkillTrackerGetSkill = AccessTools.DeclaredMethod(typeof(Pawn_SkillTracker), nameof(Pawn_SkillTracker.GetSkill));
+		public static FieldInfo Pawn_SkillTrackerPawn = AccessTools.DeclaredField(typeof(Pawn_SkillTracker), "pawn");
+		public static MethodInfo SkillRecordGetLevel = AccessTools.PropertyGetter(typeof(SkillRecord), nameof(SkillRecord.Level));
+		public static FieldInfo SkillRecordPawn = AccessTools.DeclaredField(typeof(SkillRecord), "pawn");
+		public static MethodInfo ModUtilsSkillLevel = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.SkillLevel));
 
 		static ModUtils() {
 		}
@@ -76,6 +81,12 @@ namespace WhoYouAre {
 			return res;
 		}
 
+		public static int SkillLevel(SkillRecord instance) {
+			if (StartingOrDebug()) return instance.Level;
+			var res = (SkillRecordPawn.GetValue(instance) as Pawn).GetComp<CompPawnInfo>().SkillState(instance);
+			return res ? instance.Level : 0;
+		}
+
 		internal static IEnumerable<CodeInstruction> TranspilerType(IEnumerable<CodeInstruction> instructions) {
 			foreach (var code in instructions) {
 				if (code.Calls(Pawn_Extensions__GetPriorityType)) {
@@ -113,7 +124,7 @@ namespace WhoYouAre {
 		internal static void PatchAnyBySequence(List<string> classNames, List<string> transpilerNames, List<string> regex) {
 			if (classNames.Count != transpilerNames.Count) throw new ArgumentException("class name and transpiler name not equal");
 			var regexPattern = regex.Select(x => new Regex(x));
-			var classTypes = classNames.Select(GetInner);
+			var classTypes = classNames.Select(AccessTools.TypeByName);
 			if (classTypes.All(x => x != null)) {
 				var transpilers = transpilerNames.Select(x => {
 					var split = x.Split('.');
@@ -133,13 +144,6 @@ namespace WhoYouAre {
 									Log.Message("Patched " + z.DeclaringType.FullName + "." + z.Name);
 								}));
 			}
-		}
-
-		public static Type GetInner(string path) {
-			var pathArr = path.Split('.');
-			if (pathArr.Length == 2) return AccessTools.TypeByName(path);
-			var outer = AccessTools.TypeByName(string.Join(".", pathArr.Take(2)));
-			return AccessTools.Inner(outer, string.Join(".", pathArr.Skip(2)));
 		}
 
 		public static List<TResult> Repeat<TResult>(this List<TResult> list, int count) {
