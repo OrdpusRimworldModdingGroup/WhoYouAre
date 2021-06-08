@@ -167,7 +167,7 @@ namespace WhoYouAre {
 			return (traitChance, skillChance);
 		}
 
-		public WorkTags DisabledWorkTags(bool ignoreHealth = true) {
+		public WorkTags DisabledWorkTags(bool ignoreHealth = true, bool permanentOnly = false) {
 #if DEBUGDisableTags
 			int debug_index = 0;
 			Log.Message("FilterDisableTags " + debug_index++);
@@ -200,6 +200,7 @@ namespace WhoYouAre {
 			Log.Message("FilterDisableTags " + debug_index++);
 #endif
 			pawn?.royalty?.AllTitlesForReading.ForEach(x => result |= x.conceited ? x.def.disabledWorkTags : WorkTags.None);
+			if (permanentOnly) return result;
 #if DEBUGDisableTags
 			Log.Message("FilterDisableTags " + debug_index++);
 #endif
@@ -215,9 +216,12 @@ namespace WhoYouAre {
 			return result;
 		}
 
-		public List<WorkTypeDef> DisabledWorkTypes(bool ignoreHealth = true) => pawn.GetDisabledWorkTypes().FindAll(x => (x.workTags & DisabledWorkTags(ignoreHealth)) != 0);
+		public List<WorkTypeDef> DisabledWorkTypes(bool ignoreHealth = true, bool permanentOnly = false) {
+			var tags = DisabledWorkTags(ignoreHealth, permanentOnly);
+			return pawn.GetDisabledWorkTypes().FindAll(x => (x.workTags & tags) != 0);
+		}
 
-		public bool WorkTypeDisabled(WorkTypeDef workDef, bool ignoreHealth = true) => (DisabledWorkTags(ignoreHealth) & workDef.workTags) != 0;
+		public bool WorkTypeDisabled(WorkTypeDef workDef, bool ignoreHealth = true, bool permanentOnly = false) => (DisabledWorkTags(ignoreHealth, permanentOnly) & workDef.workTags) != 0;
 
 
 

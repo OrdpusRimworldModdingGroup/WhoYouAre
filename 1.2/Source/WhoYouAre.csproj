@@ -42,6 +42,7 @@
     <Compile Include="WhoYouAre\ContentTrackerComponent.cs" />
     <Compile Include="WhoYouAre\Defs\WYAInteractionDef.cs" />
     <Compile Include="WhoYouAre\Defs\SettingExtension.cs" />
+    <Compile Include="WhoYouAre\HarmonyWYA\CompatibilityPatch\Numbers__PawnColumnWorker.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\CompatibilityPatch\WorkTab__DrawUtilities.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\CompatibilityPatch\WorkTab__WorkerAny.cs" />
     <Compile Include="WhoYouAre\HarmonyWYA\CompatibilityPatch\WorkTab__PriorityTracker.cs" />

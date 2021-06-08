@@ -14,29 +14,38 @@ namespace WhoYouAre {
 
 	public static class ModUtils {
 
-		public static int[] WholeDay = new int[24].Select((x, i) => i).ToArray();
-		public static MethodInfo ModUtilsGetPriorityGiver = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.GetPriority), new Type[] { typeof(Pawn), typeof(WorkGiverDef), typeof(int) });
-		public static MethodInfo ModUtilsGetPriorityType = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.GetPriority), new Type[] { typeof(Pawn), typeof(WorkTypeDef), typeof(int) });
-		public static FieldInfo LogCount = AccessTools.DeclaredField(typeof(Log), "messageCount");
-		public static FieldInfo Pawn_WorkSettingsPawn = AccessTools.DeclaredField(typeof(Pawn_WorkSettings), "pawn");
-		public static MethodInfo ModUtilsWorkTypeIsDisabled = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.WorkTypeIsDisabled));
-		public static MethodInfo PawnWorkTypeIsDisabled = AccessTools.DeclaredMethod(typeof(Pawn), nameof(Pawn.WorkTypeIsDisabled));
-		public static MethodInfo Pawn_WorkSettingsGetPriority = AccessTools.DeclaredMethod(typeof(Pawn_WorkSettings), nameof(Pawn_WorkSettings.GetPriority));
-		public static MethodInfo ModUtilsGetPriority = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.GetPriority), new Type[] { typeof(Pawn_WorkSettings), typeof(WorkTypeDef) });
-		public static MethodInfo Pawn_Extensions__GetPriorityGiver = AccessTools.DeclaredMethod(AccessTools.TypeByName("WorkTab.Pawn_Extensions"), "GetPriority", new Type[] { typeof(Pawn), typeof(WorkGiverDef), typeof(int) });
-		public static MethodInfo Pawn_Extensions__GetPriorityType = AccessTools.DeclaredMethod(AccessTools.TypeByName("WorkTab.Pawn_Extensions"), "GetPriority", new Type[] { typeof(Pawn), typeof(WorkTypeDef), typeof(int) });
-		public static MethodInfo PawnGetDisabledWorkTypes = AccessTools.DeclaredMethod(typeof(Pawn), nameof(Pawn.GetDisabledWorkTypes));
-		public static MethodInfo ModUtilsGetDisabledWorkTypes = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.GetDisabledWorkTypes));
-		public static MethodInfo Pawn_SkillTrackerGetSkill = AccessTools.DeclaredMethod(typeof(Pawn_SkillTracker), nameof(Pawn_SkillTracker.GetSkill));
-		public static FieldInfo Pawn_SkillTrackerPawn = AccessTools.DeclaredField(typeof(Pawn_SkillTracker), "pawn");
-		public static MethodInfo SkillRecordGetLevel = AccessTools.PropertyGetter(typeof(SkillRecord), nameof(SkillRecord.Level));
-		public static FieldInfo SkillRecordPawn = AccessTools.DeclaredField(typeof(SkillRecord), "pawn");
-		public static MethodInfo ModUtilsSkillLevel = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.SkillLevel));
-		public static MethodInfo SkillNeedValueFor = AccessTools.DeclaredMethod(typeof(SkillNeed), nameof(SkillNeed.ValueFor));
-		public static MethodInfo ModUtilsSkillValueFor = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.SkillValueFor));
-		public static FieldInfo TraitSetAllTraits = AccessTools.DeclaredField(typeof(TraitSet), nameof(TraitSet.allTraits));
-		public static FieldInfo TraitSetPawn = AccessTools.DeclaredField(typeof(TraitSet), "pawn");
-		public static MethodInfo ModUtilsAllTraits = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.AllTraits));
+		public static readonly int[] WholeDay = new int[24].Select((x, i) => i).ToArray();
+		public static readonly MethodInfo ModUtilsGetPriorityGiver = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.GetPriority), new Type[] { typeof(Pawn), typeof(WorkGiverDef), typeof(int) });
+		public static readonly MethodInfo ModUtilsGetPriorityType = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.GetPriority), new Type[] { typeof(Pawn), typeof(WorkTypeDef), typeof(int) });
+		public static readonly FieldInfo LogCount = AccessTools.DeclaredField(typeof(Log), "messageCount");
+		public static readonly FieldInfo Pawn_WorkSettingsPawn = AccessTools.DeclaredField(typeof(Pawn_WorkSettings), "pawn");
+		public static readonly MethodInfo ModUtilsWorkTypeIsDisabled = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.WorkTypeIsDisabled));
+		public static readonly MethodInfo PawnWorkTypeIsDisabled = AccessTools.DeclaredMethod(typeof(Pawn), nameof(Pawn.WorkTypeIsDisabled));
+		public static readonly MethodInfo Pawn_WorkSettingsGetPriority = AccessTools.DeclaredMethod(typeof(Pawn_WorkSettings), nameof(Pawn_WorkSettings.GetPriority));
+		public static readonly MethodInfo ModUtilsGetPriority = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.GetPriority), new Type[] { typeof(Pawn_WorkSettings), typeof(WorkTypeDef) });
+		public static readonly MethodInfo Pawn_Extensions__GetPriorityGiver = AccessTools.DeclaredMethod(AccessTools.TypeByName("WorkTab.Pawn_Extensions"), "GetPriority", new Type[] { typeof(Pawn), typeof(WorkGiverDef), typeof(int) });
+		public static readonly MethodInfo Pawn_Extensions__GetPriorityType = AccessTools.DeclaredMethod(AccessTools.TypeByName("WorkTab.Pawn_Extensions"), "GetPriority", new Type[] { typeof(Pawn), typeof(WorkTypeDef), typeof(int) });
+		public static readonly MethodInfo PawnGetDisabledWorkTypes = AccessTools.DeclaredMethod(typeof(Pawn), nameof(Pawn.GetDisabledWorkTypes));
+		public static readonly MethodInfo ModUtilsGetDisabledWorkTypes = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.GetDisabledWorkTypes));
+		public static readonly MethodInfo Pawn_SkillTrackerGetSkill = AccessTools.DeclaredMethod(typeof(Pawn_SkillTracker), nameof(Pawn_SkillTracker.GetSkill));
+		public static readonly FieldInfo Pawn_SkillTrackerPawn = AccessTools.DeclaredField(typeof(Pawn_SkillTracker), "pawn");
+		public static readonly MethodInfo SkillRecordGetLevel = AccessTools.PropertyGetter(typeof(SkillRecord), nameof(SkillRecord.Level));
+		public static readonly FieldInfo SkillRecordPawn = AccessTools.DeclaredField(typeof(SkillRecord), "pawn");
+		public static readonly MethodInfo ModUtilsSkillLevel = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.SkillLevel));
+		public static readonly MethodInfo SkillNeedValueFor = AccessTools.DeclaredMethod(typeof(SkillNeed), nameof(SkillNeed.ValueFor));
+		public static readonly MethodInfo ModUtilsSkillValueFor = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.SkillValueFor));
+		public static readonly FieldInfo TraitSetAllTraits = AccessTools.DeclaredField(typeof(TraitSet), nameof(TraitSet.allTraits));
+		public static readonly FieldInfo TraitSetPawn = AccessTools.DeclaredField(typeof(TraitSet), "pawn");
+		public static readonly MethodInfo ModUtilsAllTraits = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.AllTraits));
+		public static readonly MethodInfo SkillRecordTotallyDisabled = AccessTools.PropertyGetter(typeof(SkillRecord), nameof(SkillRecord.TotallyDisabled));
+		public static readonly MethodInfo ModUtilsSkillTotallyDisabled = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.SkillTotallyDisabled));
+		public static readonly FieldInfo SkillRecordPassion = AccessTools.DeclaredField(typeof(SkillRecord), nameof(SkillRecord.passion));
+		public static readonly MethodInfo ModUtilsSkillPassion = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.SkillPassion));
+		public static readonly MethodInfo StatWorkerIsDisabledFor = AccessTools.DeclaredMethod(typeof(StatWorker), nameof(StatWorker.IsDisabledFor));
+		public static readonly MethodInfo ModUtilsStatIsDisabledFor = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.StatIsDisabledFor));
+		public static readonly FieldInfo StatWorkerStat = AccessTools.DeclaredField(typeof(StatWorker), "stat");
+		public static readonly MethodInfo StatExtensionGetStatValue = AccessTools.DeclaredMethod(typeof(StatExtension), nameof(StatExtension.GetStatValue));
+		public static readonly MethodInfo ModUtilsGetStatValue = AccessTools.DeclaredMethod(typeof(ModUtils), nameof(ModUtils.GetStatValue));
 
 
 		public static bool ShouldShow(Pawn pawn, bool pawnUnlocked) {
@@ -99,6 +108,48 @@ namespace WhoYouAre {
 			if (StartingOrDebug()) return instance.allTraits;
 			var res = (TraitSetPawn.GetValue(instance) as Pawn).GetComp<CompPawnInfo>().KnownTraits;
 			return res;
+		}
+
+		public static bool SkillTotallyDisabled(SkillRecord instance) {
+			if (StartingOrDebug()) return instance.TotallyDisabled;
+			var comp = (SkillRecordPawn.GetValue(instance) as Pawn).GetComp<CompPawnInfo>();
+			return instance.def.IsDisabled(comp.DisabledWorkTags(permanentOnly: true), comp.DisabledWorkTypes(permanentOnly: true));
+		}
+
+		public static Passion SkillPassion(SkillRecord instance) {
+			if (StartingOrDebug()) return instance.passion;
+			return (SkillRecordPawn.GetValue(instance) as Pawn).GetComp<CompPawnInfo>().SkillState(instance) ? instance.passion : Passion.None;
+		}
+
+		public static bool StatIsDisabledFor(StatWorker instance, Thing thing) {
+			if (StartingOrDebug()) return instance.IsDisabledFor(thing);
+			var stat = StatWorkerStat.GetValue(instance) as StatDef;
+			if (stat.neverDisabled || (stat.skillNeedFactors.NullOrEmpty() && stat.skillNeedOffsets.NullOrEmpty())) {
+				return false;
+			}
+			Pawn pawn = thing as Pawn;
+			if (pawn != null && pawn.story != null) {
+				if (stat.skillNeedFactors != null) {
+					for (int i = 0; i < stat.skillNeedFactors.Count; i++) {
+						if (ModUtils.SkillTotallyDisabled(pawn.skills.GetSkill(stat.skillNeedFactors[i].skill))) {
+							return true;
+						}
+					}
+				}
+				if (stat.skillNeedOffsets != null) {
+					for (int j = 0; j < stat.skillNeedOffsets.Count; j++) {
+						if (ModUtils.SkillTotallyDisabled(pawn.skills.GetSkill(stat.skillNeedOffsets[j].skill))) {
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
+
+		public static float GetStatValue(Thing thing, StatDef stat, bool applyPostProcess = true) {
+			if (StartingOrDebug()) return thing.GetStatValue(stat, applyPostProcess);
+			return stat.Worker.GetValue(StatRequest.For(thing), false);
 		}
 
 		internal static IEnumerable<CodeInstruction> TranspilerType(IEnumerable<CodeInstruction> instructions) {
